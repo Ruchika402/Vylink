@@ -25,6 +25,13 @@ class ImageViewSet(viewsets.ModelViewSet):
         """Rate limit image uploads to prevent abuse"""
         return super().create(request, *args, **kwargs)
     
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def public(self, request):
+        """View public images (no authentication required)"""
+        public_images = Image.objects.filter(is_public=True)
+        serializer = self.get_serializer(public_images, many=True)
+        return Response(serializer.data)
+    
     @action(detail=True, methods=['get'])
     def share(self, request, pk=None):
         """Generate a shareable link for an image"""
@@ -37,7 +44,7 @@ class ImageViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Generate unique shareable link (simplified for now)
+        # Generate unique shareable link
         import uuid
         shareable_link = str(uuid.uuid4())[:8]
         image.shareable_link = shareable_link
@@ -47,10 +54,3 @@ class ImageViewSet(viewsets.ModelViewSet):
         cache.set(f'share_{shareable_link}', image.id, timeout=86400)  # 24 hours
         
         return Response({"shareable_link": shareable_link})
-    
-    @action(detail=False, methods=['get'])
-    def public(self, request):
-        """View public images (no authentication required)"""
-        public_images = Image.objects.filter(is_public=True)
-        serializer = self.get_serializer(public_images, many=True)
-        return Response(serializer.data)
