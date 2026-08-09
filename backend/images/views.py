@@ -6,12 +6,14 @@ from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from .models import Image
-from .serializers import ImageSerializer, UserRegistrationSerializer
+from .serializers import ImageSerializer, UserRegistrationSerializer, UserSerializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from django.db import models 
 
 class ImageViewSet(viewsets.ModelViewSet):
     serializer_class = ImageSerializer
@@ -104,3 +106,27 @@ class CustomLoginView(APIView):
                 {'error': 'Invalid credentials'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+
+class UserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+class DashboardStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        from .models import Image
+        
+        total_files = Image.objects.filter(owner=request.user).count()
+        public_files = Image.objects.filter(owner=request.user, is_public=True).count()
+        total_views = Image.objects.filter(owner=request.user).aggregate(sum=models.Sum('view_count'))['sum'] or 0
+        
+        return Response({
+            'total_files': total_files,
+            'active_links': public_files,
+            'total_views': total_views,
+            'expiring_soon': 0,  # Add expiry logic later
+        })
