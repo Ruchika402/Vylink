@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../api/client';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/client";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/token/', { username: email, password });
-      toast.success('Welcome back!');
-      navigate('/dashboard');
+      await api.post("/token/", { username: email, password });
+      toast.success("Welcome back!");
+      navigate("/dashboard");
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || 'Invalid credentials');
+      toast.error(err.response?.data?.detail || "Invalid credentials");
     }
   };
 
@@ -49,7 +49,10 @@ const Login = () => {
           </button>
         </form>
         <p className="text-center mt-4 text-gray-500">
-          Don't have an account? <a href="/register" className="text-[#6C63FF]">Create one →</a>
+          Don't have an account?{" "}
+          <a href="/register" className="text-[#6C63FF]">
+            Create one →
+          </a>
         </p>
       </div>
     </div>
