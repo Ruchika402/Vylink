@@ -136,6 +136,7 @@ REST_FRAMEWORK = {
 
 # JWT Settings
 from datetime import timedelta
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -147,8 +148,14 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JWT_ACCESS_COOKIE': 'access_token',
+    'JWT_REFRESH_COOKIE': 'refresh_token',
+    'JWT_COOKIE_SECURE': True,   # Only send over HTTPS
+    'JWT_COOKIE_HTTPONLY': True,  # Prevents XSS
+    'JWT_COOKIE_SAMESITE': 'Lax',
 }
-
 
 
 DEBUG = True
@@ -156,8 +163,10 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # CORS - Allow React dev server
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
+    "http://localhost:3000",
+    "http://localhost:3001",  
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001", 
 ]
 
 # Don't use HTTPS in development
@@ -171,3 +180,5 @@ if DEBUG:
     MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
     INTERNAL_IPS = ['127.0.0.1']
 
+
+CORS_ALLOW_CREDENTIALS = True

@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -6,7 +6,12 @@ from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from .models import Image
-from .serializers import ImageSerializer
+from .serializers import ImageSerializer, UserRegistrationSerializer
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework import status
+from django.contrib.auth import authenticate
+from rest_framework.views import APIView
 
 class ImageViewSet(viewsets.ModelViewSet):
     serializer_class = ImageSerializer
@@ -54,3 +59,48 @@ class ImageViewSet(viewsets.ModelViewSet):
         cache.set(f'share_{shareable_link}', image.id, timeout=86400)  # 24 hours
         
         return Response({"shareable_link": shareable_link})
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserRegistrationSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+            "message": "User created successfully",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email
+            }
+        }, status=status.HTTP_201_CREATED)
+
+class CustomLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        user = authenticate(username=username, password=password)
+        
+        if user:
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email
+                }
+            })
+        else:
+            return Response(
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
