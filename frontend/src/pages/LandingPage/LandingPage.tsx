@@ -10,13 +10,19 @@ const LandingPage: React.FC = () => {
       <nav className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              {/* The Image with Hover Glow */}
+              <img 
+                src="favicon.ico.png" 
+                alt="Vylink Logo" 
+                className="h-9 w-auto transition-all duration-300 hover:shadow-[0_0_20px_rgba(108,99,255,0.6)] hover:scale-105 rounded-xl" 
+              />
+              
+              {/* The Text */}
               <span className="text-2xl font-bold text-[#6C63FF]">
-                🔗 Vylink
+                Vylink
               </span>
-              <span className="text-xs bg-[#6C63FF]/10 text-[#6C63FF] px-2 py-1 rounded-full">
-                Beta
-              </span>
+              
             </div>
             <div className="flex items-center space-x-4">
               <Link
