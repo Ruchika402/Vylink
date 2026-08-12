@@ -1,17 +1,8 @@
 FROM node:18-alpine
-
-# Set work directory
+RUN npm install -g pnpm
 WORKDIR /app
-
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
-RUN npm install -g pnpm && pnpm install
-
-# Copy project
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 COPY . .
-
-# Expose port
 EXPOSE 3000
-
-# Start React app
 CMD ["pnpm", "start"]

@@ -32,16 +32,23 @@ class ImageSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'date_joined']
+        fields = ['id', 'username', 'email','first_name', 'last_name', 'date_joined']
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
-    
+    confirm_password = serializers.CharField(write_only=True, min_length=8)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
-    
+        fields = ['id', 'username', 'email', 'password', 'confirm_password', 'first_name', 'last_name']
+
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+        return data
+
     def create(self, validated_data):
+        validated_data.pop('confirm_password')
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email', ''),
