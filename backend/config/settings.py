@@ -62,11 +62,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='postgres'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='postgres'),
-        'HOST': config('DB_HOST', default='db'),
-        'PORT': config('DB_PORT', default='5432'),
+        'NAME': 'vylink_db',        # Your database name
+        'USER': 'postgres',          # Your PostgreSQL username
+        'PASSWORD': 8697,      # Your PostgreSQL password
+        'HOST': 'localhost',         # ✅ Changed from 'db' to 'localhost'
+        'PORT': '5432',
     }
 }
 
@@ -74,10 +74,9 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f"redis://{config('REDIS_HOST', default='redis')}:{config('REDIS_PORT', default='6379')}/1",
+        'LOCATION': 'redis://localhost:6380/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'PASSWORD': config('REDIS_PASSWORD', default=''),
         }
     }
 }
