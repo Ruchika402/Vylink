@@ -105,7 +105,9 @@ const Dashboard: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activity
             </h2>
-            <button className="text-sm text-[#6C63FF] hover:underline">
+            <button 
+            onClick={() => window.location.href = "/files"}
+            className="text-sm text-[#6C63FF] hover:underline">
               View All →
             </button>
           </div>
