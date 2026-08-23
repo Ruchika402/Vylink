@@ -24,7 +24,7 @@ const Register: React.FC = () => {
       first_name: form.first_name,
       last_name: form.last_name,
     });
-      navigate('/dashboard');
+      navigate('/login');
     } catch (error) { /* handled in context */ } finally { setLoading(false); }
   };
 

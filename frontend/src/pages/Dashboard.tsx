@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 import StatsCard from "../components/dashboard/StatsCard";
+import UploadForm from "../components/UploadForm";
 
 interface Stats {
   total_files: number;
@@ -15,6 +16,7 @@ const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentFiles, setRecentFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -46,15 +48,24 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.first_name || user?.username || "User"}! 🎉
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Here's what's happening with your files today.
-          </p>
+        {/* Welcome Header with Upload Button */}
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Welcome back, {user?.first_name || user?.username || "User"}! 🎉
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Here's what's happening with your files today.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowUpload(true)}
+            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition"
+          >
+            + Upload
+          </button>
         </div>
+        
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -142,8 +153,30 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+      {showUpload && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">📤 Upload Image</h2>
+              <button
+                onClick={() => setShowUpload(false)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <UploadForm onUploadSuccess={() => {
+              setShowUpload(false);
+              fetchDashboardData();
+            }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+    
+  
 
 export default Dashboard;
