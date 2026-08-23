@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from .models import Image
-from .serializers import UserSerializer, ImageSerializer#, UserRegistrationSerializer
+from .serializers import UserSerializer, ImageSerializer, UserRegistrationSerializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
@@ -81,52 +81,28 @@ class PublicShareView(APIView):
         return Response(serializer.data)
 
         
-'''
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
+        print("🔍 Received data:", request.data)  # Debug
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-            "message": "User created successfully",
-            "user": {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email
-            }
-        }, status=status.HTTP_201_CREATED)
-
-class CustomLoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-    
-    def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        
-        user = authenticate(username=username, password=password)
-        
-        if user:
-            from rest_framework_simplejwt.tokens import RefreshToken
-            refresh = RefreshToken.for_user(user)
+        if serializer.is_valid():
+            user = serializer.save()
             return Response({
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email
+                "message": "User created successfully",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email
                 }
-            })
-        else:
-            return Response(
-                {'error': 'Invalid credentials'},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-'''
+            }, status=status.HTTP_201_CREATED)
+        print("❌ Errors:", serializer.errors)  # Debug
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
     
