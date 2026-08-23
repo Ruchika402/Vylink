@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from .models import Image
-from .serializers import ImageSerializer, UserRegistrationSerializer, UserSerializer
+from .serializers import UserSerializer, ImageSerializer#, UserRegistrationSerializer
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
@@ -14,54 +14,74 @@ from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db import models 
-
+import uuid
 class ImageViewSet(viewsets.ModelViewSet):
+    """
+    Full CRUD for images.
+    - GET /api/images/ → List user's images
+    - POST /api/images/ → Upload new image
+    - GET /api/images/{id}/ → Get single image
+    - PUT /api/images/{id}/ → Update image
+    - DELETE /api/images/{id}/ → Delete image
+    """
     serializer_class = ImageSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Fix OWASP A01: Broken Access Control - Users only see their own images"""
+        """Users can only see their own images"""
         return Image.objects.filter(owner=self.request.user)
     
     def perform_create(self, serializer):
-        """Set the owner to the current user"""
-        serializer.save(owner=self.request.user)
+        """Set owner automatically and extract file metadata"""
+        file = self.request.FILES.get('file')
+        if file:
+            serializer.save(
+                owner=self.request.user,
+                file_size=file.size,
+                mime_type=file.content_type
+            )
+        else:
+            serializer.save(owner=self.request.user)
     
-    @method_decorator(ratelimit(key='user', rate='10/m', method='POST', block=True))
-    def create(self, request, *args, **kwargs):
-        """Rate limit image uploads to prevent abuse"""
-        return super().create(request, *args, **kwargs)
-    
-    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
-    def public(self, request):
-        """View public images (no authentication required)"""
-        public_images = Image.objects.filter(is_public=True)
-        serializer = self.get_serializer(public_images, many=True)
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post'])
     def share(self, request, pk=None):
         """Generate a shareable link for an image"""
         image = self.get_object()
         
-        # Fix OWASP A01: Ensure user owns the image
+        # Check ownership
         if image.owner != request.user:
             return Response(
                 {"error": "You don't have permission to share this image"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Generate unique shareable link
-        import uuid
-        shareable_link = str(uuid.uuid4())[:8]
-        image.shareable_link = shareable_link
-        image.save(update_fields=['shareable_link'])
-        
-        # Cache the shareable link for performance
-        cache.set(f'share_{shareable_link}', image.id, timeout=86400)  # 24 hours
-        
-        return Response({"shareable_link": shareable_link})
+        # Generate unique link
+        link = image.generate_shareable_link()
+        return Response({
+            "shareable_link": link,
+            "full_url": request.build_absolute_uri(f'/api/images/share/{link}/')
+        })
+    
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def public(self, request):
+        """View public images (no auth required)"""
+        public_images = Image.objects.filter(is_public=True)[:20]
+        serializer = self.get_serializer(public_images, many=True)
+        return Response(serializer.data)
 
+# ========== PUBLIC SHARE VIEW (No Auth) ==========
+class PublicShareView(APIView):
+    """View a shared image without authentication"""
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self, request, link):
+        image = get_object_or_404(Image, shareable_link=link)
+        image.increment_view_count()
+        serializer = ImageSerializer(image, context={'request': request})
+        return Response(serializer.data)
+
+        
+'''
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
@@ -106,7 +126,7 @@ class CustomLoginView(APIView):
                 {'error': 'Invalid credentials'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
-
+'''
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
     

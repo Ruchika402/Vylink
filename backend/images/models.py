@@ -34,6 +34,16 @@ class Image(models.Model):
     
     def __str__(self):
         return f"{self.title} by {self.owner.username}"
+
+    def generate_shareable_link(self):
+        """Generate a unique shareable link"""
+        import uuid
+        link = str(uuid.uuid4())[:8]
+        while Image.objects.filter(shareable_link=link).exists():
+            link = str(uuid.uuid4())[:8]
+        self.shareable_link = link
+        self.save(update_fields=['shareable_link'])
+        return link
     
     def increment_view_count(self):
         """Increment view count atomically"""

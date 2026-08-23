@@ -1,12 +1,18 @@
 import os
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-default-key-change-me')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True  # ✅ Set to True for development
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # ✅ Development hosts
 
 # Application definition
 INSTALLED_APPS = [
@@ -58,19 +64,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database - Will be overridden in local/production
+# ✅ PostgreSQL Database Configuration (Fixed)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vylink_db',        # Your database name
-        'USER': 'postgres',          # Your PostgreSQL username
-        'PASSWORD': 8697,      # Your PostgreSQL password
-        'HOST': 'localhost',         # ✅ Changed from 'db' to 'localhost'
+        'NAME': 'vylink_db',
+        'USER': 'postgres',
+        'PASSWORD': '8697',  # ✅ Your password as string
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-# Cache (Redis)
+# ✅ Redis Cache (Optional for Day 1)
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -106,13 +112,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# REST Framework settings
+# ✅ REST Framework settings (Fixed)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',  # ✅ AllowAny for testing
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -122,21 +128,9 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FormParser',
     ),
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '1000/day',
-        'login': '5/minute',
-        'upload': '10/minute',
-    }
 }
 
-# JWT Settings
-from datetime import timedelta
-
+# ✅ JWT Settings (Fixed for development)
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -148,43 +142,22 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'JWT_ACCESS_COOKIE': 'access_token',
-    'JWT_REFRESH_COOKIE': 'refresh_token',
-    'JWT_COOKIE_SECURE': True,   # Only send over HTTPS
-    'JWT_COOKIE_HTTPONLY': True,  # Prevents XSS
-    'JWT_COOKIE_SAMESITE': 'Lax',
 }
 
-
-DEBUG = False
-ALLOWED_HOSTS = ['your-domain.com', 'www.your-domain.com']
-
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-
-# CORS - Allow React dev server
+# ✅ CORS - Allow React dev server
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:3001",  
+    "http://localhost:3001",
     "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001", 
+    "http://127.0.0.1:3001",
 ]
 
-# Don't use HTTPS in development
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-
-# Django Debug Toolbar (optional)
-if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
-    INTERNAL_IPS = ['127.0.0.1']
-
-
 CORS_ALLOW_CREDENTIALS = True
+
+# ✅ These should NOT be in development (only production)
+# DEBUG = False  ❌ REMOVE THIS
+# SECURE_SSL_REDIRECT = True ❌ REMOVE THIS
+# SESSION_COOKIE_SECURE = True ❌ REMOVE THIS
+# CSRF_COOKIE_SECURE = True ❌ REMOVE THIS
+# SECURE_HSTS_SECONDS = 31536000 ❌ REMOVE THIS
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True ❌ REMOVE THIS
