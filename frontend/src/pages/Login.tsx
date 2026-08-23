@@ -11,14 +11,22 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username || !password) { toast.error('Please fill in all fields'); return; }
-    setLoading(true);
-    try {
-      await login(username, password);
-      navigate('/dashboard');
-    } catch (error) { /* handled in context */ } finally { setLoading(false); }
-  };
+  e.preventDefault();
+  if (!username || !password) {
+    toast.error('Please fill in all fields');
+    return;
+  }
+  setLoading(true);
+  try {
+    console.log('📤 Logging in with:', { username, password }); // Debug
+    await login(username, password);
+    navigate('/dashboard');
+  } catch (error) {
+    console.error('❌ Login error:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center p-4">

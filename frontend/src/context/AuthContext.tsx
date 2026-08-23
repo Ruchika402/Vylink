@@ -43,18 +43,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (username: string, password: string) => {
-    try {
-      const response = await api.post('/token/', { username, password });
-      localStorage.setItem('access_token', response.data.access);
-      localStorage.setItem('refresh_token', response.data.refresh);
-      const userResponse = await api.get('/user/');
-      setUser(userResponse.data);
-      toast.success('Welcome back! 🎉');
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Invalid credentials');
-      throw error;
-    }
-  };
+  try {
+    console.log('📤 AuthContext login:', { username, password }); // Debug
+    
+    const response = await api.post('/token/', { username, password });
+    console.log('✅ Token response:', response.data);
+    
+    localStorage.setItem('access_token', response.data.access);
+    localStorage.setItem('refresh_token', response.data.refresh);
+    
+    const userResponse = await api.get('/user/');
+    console.log('✅ User response:', userResponse.data);
+    
+    setUser(userResponse.data);
+    toast.success('Welcome back! 🎉');
+  } catch (error: any) {
+    console.error('❌ Login error:', error.response?.data);
+    toast.error(error.response?.data?.detail || 'Invalid credentials');
+    throw error;
+  }
+};
 
  const register = async (data: any) => {
   try {
