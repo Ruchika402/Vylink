@@ -71,7 +71,9 @@ const Files: React.FC = () => {
 
   // Filter files
   const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = file.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
     const matchesFilter =
       filter === "all" ||
       (filter === "public" && file.is_public) ||
@@ -94,7 +96,7 @@ const Files: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">📁 My Files</h1>
           <button
-            onClick={() => window.location.href = "/dashboard"}
+            onClick={() => (window.location.href = "/dashboard")}
             className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition"
           >
             + Upload
@@ -150,20 +152,33 @@ const Files: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm p-12 text-center">
             <div className="text-6xl mb-4">📂</div>
             <p className="text-gray-500 text-lg">No files found</p>
-            <p className="text-gray-400 text-sm mt-1">Upload your first file to get started!</p>
+            <p className="text-gray-400 text-sm mt-1">
+              Upload your first file to get started!
+            </p>
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredFiles.map((file) => (
-              <div key={file.id} className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition">
+              <div
+                key={file.id}
+                className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition"
+              >
                 <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                   {file.file_url ? (
-                    <img src={file.file_url} alt={file.title} className="w-full h-full object-cover" />
+                    <img
+                      src={file.file_url}
+                      alt={file.title}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">📄</div>
+                    <div className="w-full h-full flex items-center justify-center text-4xl">
+                      📄
+                    </div>
                   )}
                 </div>
-                <h4 className="font-medium text-gray-800 truncate">{file.title}</h4>
+                <h4 className="font-medium text-gray-800 truncate">
+                  {file.title}
+                </h4>
                 <p className="text-xs text-gray-500 mt-1">
                   {new Date(file.uploaded_at).toLocaleDateString()}
                 </p>
@@ -177,7 +192,9 @@ const Files: React.FC = () => {
                   >
                     {file.is_public ? "Public" : "Private"}
                   </span>
-                  <span className="text-xs text-gray-400">{file.view_count} views</span>
+                  <span className="text-xs text-gray-400">
+                    {file.view_count} views
+                  </span>
                 </div>
                 <div className="flex gap-2 mt-3">
                   <button
@@ -199,13 +216,19 @@ const Files: React.FC = () => {
         ) : (
           <div className="bg-white rounded-xl shadow-sm divide-y">
             {filteredFiles.map((file) => (
-              <div key={file.id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition">
+              <div
+                key={file.id}
+                className="flex items-center justify-between p-4 hover:bg-gray-50 transition"
+              >
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="text-2xl flex-shrink-0">📄</span>
                   <div className="min-w-0">
-                    <p className="font-medium text-gray-800 truncate">{file.title}</p>
+                    <p className="font-medium text-gray-800 truncate">
+                      {file.title}
+                    </p>
                     <p className="text-xs text-gray-500">
-                      {new Date(file.uploaded_at).toLocaleDateString()} • {file.view_count} views
+                      {new Date(file.uploaded_at).toLocaleDateString()} •{" "}
+                      {file.view_count} views
                     </p>
                   </div>
                 </div>
@@ -257,7 +280,9 @@ const Files: React.FC = () => {
                 <span className="text-2xl">📄</span>
                 <div>
                   <p className="font-medium">{selectedFile.title}</p>
-                  <p className="text-xs text-gray-500">{selectedFile.view_count} views</p>
+                  <p className="text-xs text-gray-500">
+                    {selectedFile.view_count} views
+                  </p>
                 </div>
               </div>
 

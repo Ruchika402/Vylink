@@ -65,7 +65,6 @@ const Dashboard: React.FC = () => {
             + Upload
           </button>
         </div>
-        
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -105,9 +104,10 @@ const Dashboard: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900">
               Recent Activity
             </h2>
-            <button 
-            onClick={() => window.location.href = "/files"}
-            className="text-sm text-[#6C63FF] hover:underline">
+            <button
+              onClick={() => (window.location.href = "/files")}
+              className="text-sm text-[#6C63FF] hover:underline"
+            >
               View All →
             </button>
           </div>
@@ -167,18 +167,17 @@ const Dashboard: React.FC = () => {
                 ×
               </button>
             </div>
-            <UploadForm onUploadSuccess={() => {
-              setShowUpload(false);
-              fetchDashboardData();
-            }} />
+            <UploadForm
+              onUploadSuccess={() => {
+                setShowUpload(false);
+                fetchDashboardData();
+              }}
+            />
           </div>
         </div>
       )}
     </div>
   );
 };
-
-    
-  
 
 export default Dashboard;
