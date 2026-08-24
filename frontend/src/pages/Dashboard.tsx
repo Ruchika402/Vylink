@@ -61,14 +61,7 @@ const Dashboard: React.FC = () => {
               >
                 ☰
               </button>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setShowUpload(true)}
-                  className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition text-sm"
-                >
-                  + Upload
-                </button>
-              </div>
+              
             </div>
           </div>
         </nav>
