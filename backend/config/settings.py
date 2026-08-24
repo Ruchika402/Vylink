@@ -3,6 +3,9 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+
+SITE_ID = 1
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -22,6 +25,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', 
     
     # Third party apps
     'rest_framework',
@@ -42,7 +51,51 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
+
+# ===== Authentication Backends =====
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ===== Allauth Settings =====
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow both
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # ✅ Email confirmation required
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # Auto-login after confirm
+
+LOGIN_REDIRECT_URL = '/dashboard/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+# ===== Google OAuth Settings =====
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,  # ✅ More secure
+        'FETCH_USERINFO': True,  # ✅ Get user data from Google
+    }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET = True  # ✅ Redirect directly to Google
+
+# ===== Email Backend (for development) =====
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # ✅ Logs to console
+# For production, use SMTP or SendGrid
+
+# ===== Frontend URL for redirects =====
+FRONTEND_URL = 'http://localhost:3000'
+SOCIALACCOUNT_LOGIN_REDIRECT_URL = FRONTEND_URL + '/dashboard'
+ACCOUNT_SIGNUP_REDIRECT_URL = FRONTEND_URL + '/dashboard'
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -106,7 +159,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
