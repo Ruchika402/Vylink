@@ -115,63 +115,77 @@ const Dashboard: React.FC = () => {
             color="bg-red-500"
           />
         </div>
+        
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Recent Activity
-            </h2>
-            <button
-              onClick={() => (window.location.href = "/files")}
-              className="text-sm text-[#6C63FF] hover:underline"
-            >
-              View All →
+        {/* Quick Actions */}
+<div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+  <h3 className="text-sm font-medium text-gray-700 mb-4">Quick Actions</h3>
+  <div className="flex flex-wrap gap-3">
+    <button
+      onClick={() => setShowUpload(true)}
+      className="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition text-sm font-medium flex items-center gap-2"
+    >
+      📤 Upload New File
+    </button>
+    <button
+      onClick={() => window.location.href = "/files"}
+      className="border border-gray-200 text-gray-700 px-6 py-2.5 rounded-lg hover:border-primary hover:text-primary transition text-sm font-medium flex items-center gap-2"
+    >
+      📋 Manage Links
+    </button>
+  </div>
+</div>
+
+       {/* Recent Activity */}
+<div className="bg-white rounded-xl shadow-sm overflow-hidden">
+  <div className="px-6 py-4 border-b border-gray-200">
+    <div className="flex justify-between items-center">
+      <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+      <button
+        onClick={() => window.location.href = "/files"}
+        className="text-sm text-primary hover:underline"
+      >
+        View All →
+      </button>
+    </div>
+  </div>
+
+  {recentFiles.length === 0 ? (
+    <div className="text-center py-12">
+      <div className="text-6xl mb-4">📂</div>
+      <p className="text-gray-500">No files uploaded yet.</p>
+      <p className="text-sm text-gray-400 mt-1">Upload your first file to get started!</p>
+    </div>
+  ) : (
+    <div className="divide-y divide-gray-100">
+      {recentFiles.map((file: any) => (
+        <div key={file.id} className="px-6 py-4 hover:bg-gray-50 transition flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <span className="text-2xl">📄</span>
+            <div>
+              <p className="font-medium text-gray-900">{file.title}</p>
+              <p className="text-xs text-gray-500">
+                {new Date(file.uploaded_at).toLocaleDateString()} • {file.view_count} views
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <span className={`text-xs px-2.5 py-1 rounded-full ${
+              file.is_public
+                ? "bg-green-100 text-green-700"
+                : "bg-gray-100 text-gray-600"
+            }`}>
+              {file.is_public ? "Active" : "Private"}
+            </span>
+            <button className="text-sm text-primary hover:underline">
+              Share
             </button>
           </div>
-
-          {recentFiles.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              No files uploaded yet.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {recentFiles.map((file: any) => (
-                <div
-                  key={file.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">📄</span>
-                    <div>
-                      <p className="font-medium text-gray-900">{file.title}</p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(file.uploaded_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm text-gray-600">
-                      {file.view_count} views
-                    </span>
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        file.is_public
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {file.is_public ? "Active" : "Private"}
-                    </span>
-                    <button className="text-[#6C63FF] text-sm hover:underline">
-                      Share
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
+      ))}
+    </div>
+  )}
+</div>
       </div>
       {showUpload && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
