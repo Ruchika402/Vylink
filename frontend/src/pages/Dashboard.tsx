@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 import StatsCard from "../components/dashboard/StatsCard";
 import UploadForm from "../components/UploadForm";
-
+import Sidebar from "../components/Layout/Sidebar";
 interface Stats {
   total_files: number;
   active_links: number;
@@ -17,6 +17,7 @@ const Dashboard: React.FC = () => {
   const [recentFiles, setRecentFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -47,10 +48,34 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Header with Upload Button */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <div className="lg:ml-64">
+        {/* Top Navbar - Only hamburger + upload button */}
+        <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden text-gray-600 hover:text-gray-900 text-2xl"
+              >
+                ☰
+              </button>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setShowUpload(true)}
+                  className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition text-sm"
+                >
+                  + Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Welcome Header - Now only in main content */}
+          <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
               Welcome back, {user?.first_name || user?.username || "User"}! 🎉
             </h1>
@@ -58,13 +83,6 @@ const Dashboard: React.FC = () => {
               Here's what's happening with your files today.
             </p>
           </div>
-          <button
-            onClick={() => setShowUpload(true)}
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition"
-          >
-            + Upload
-          </button>
-        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -176,6 +194,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
