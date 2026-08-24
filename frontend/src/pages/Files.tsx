@@ -93,15 +93,21 @@ const Files: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">📁 My Files</h1>
-          <button
-            onClick={() => (window.location.href = "/dashboard")}
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition"
-          >
-            + Upload
-          </button>
-        </div>
+        <div className="bg-white rounded-xl shadow-sm p-16 text-center">
+    <div className="text-7xl mb-4">📂</div>
+    <p className="text-gray-500 text-lg font-medium">No files found</p>
+    <p className="text-gray-400 text-sm mt-1">
+      {search ? "Try adjusting your search or filter" : "Upload your first file to get started!"}
+    </p>
+    {!search && (
+      <button
+        onClick={() => window.location.href = "/dashboard"}
+        className="mt-6 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition"
+      >
+        + Upload File
+      </button>
+    )}
+  </div>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 items-center bg-white p-4 rounded-xl shadow-sm mb-6">
@@ -260,7 +266,22 @@ const Files: React.FC = () => {
           </div>
         )}
       </div>
-
+{/* Pagination */}
+<div className="flex justify-between items-center mt-6 text-sm text-gray-500">
+  <p>Showing {filteredFiles.length} of {files.length} files</p>
+  <div className="flex gap-2">
+    <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      ←
+    </button>
+    <button className="px-3 py-1 bg-primary text-white rounded-lg">1</button>
+    <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      2
+    </button>
+    <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+      →
+    </button>
+  </div>
+</div>
       {/* Share Modal */}
       {showShareModal && selectedFile && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
