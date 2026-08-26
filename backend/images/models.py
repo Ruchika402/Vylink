@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import os
+from datetime import timedelta
 
 def image_upload_path(instance, filename):
     """Organize uploads in user-specific folders"""
@@ -24,7 +25,8 @@ class Image(models.Model):
     shareable_link = models.CharField(max_length=255, unique=True, null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+    expires_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         ordering = ['-uploaded_at']
         indexes = [
@@ -52,3 +54,13 @@ class Image(models.Model):
     
     def get_file_extension(self):
         return os.path.splitext(self.file.name)[1] if self.file else ''
+
+    def is_expired(self):
+        if not self.expires_at:
+            return False
+        return timezone.now() > self.expires_at
+
+    def set_expiry(self, days=7):
+        """Set expiry date (default: 7 days)"""
+        self.expires_at = timezone.now() + timedelta(days=days)
+        self.save(update_fields=['expires_at'])

@@ -45,22 +45,40 @@ class ImageViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def share(self, request, pk=None):
-        """Generate a shareable link for an image"""
+        """Generate a shareable link for an image with expiry"""
         image = self.get_object()
-        
-        # Check ownership
+    
+    # Check ownership
         if image.owner != request.user:
             return Response(
                 {"error": "You don't have permission to share this image"},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
-        # Generate unique link
+    
+    # Get expiry days from request (default: 7)
+        expires_in = request.data.get('expires_in', 7)
+    
+    # Generate unique link
         link = image.generate_shareable_link()
+    
+    # Set expiry (if expires_in > 0)
+        if expires_in and expires_in > 0:
+            from django.utils import timezone
+            from datetime import timedelta
+            image.expires_at = timezone.now() + timedelta(days=expires_in)
+            image.save(update_fields=['expires_at'])
+        else:
+        # Never expires
+            image.expires_at = None
+            image.save(update_fields=['expires_at'])
+    
         return Response({
             "shareable_link": link,
-            "full_url": request.build_absolute_uri(f'/api/images/share/{link}/')
+            "full_url": request.build_absolute_uri(f'/api/images/share/{link}/'),
+            "expires_at": image.expires_at,
+            "expires_in": expires_in if expires_in > 0 else "Never"
         })
+
     
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
     def public(self, request):
@@ -75,10 +93,37 @@ class PublicShareView(APIView):
     permission_classes = [permissions.AllowAny]
     
     def get(self, request, link):
+        from django.utils import timezone
+        
         image = get_object_or_404(Image, shareable_link=link)
+        
+        # ✅ Check if link is expired
+        if image.expires_at and timezone.now() > image.expires_at:
+            return Response(
+                {"error": "This link has expired"},
+                status=status.HTTP_410_GONE
+            )
+        
         image.increment_view_count()
         serializer = ImageSerializer(image, context={'request': request})
         return Response(serializer.data)
+    def perform_create(self, serializer):
+        """Set owner automatically and extract file metadata"""
+        file = self.request.FILES.get('file')
+        is_public = self.request.data.get('is_public', 'false').lower() == 'true'
+    
+        if file:
+            serializer.save(
+                owner=self.request.user,
+                file_size=file.size,
+                mime_type=file.content_type,
+                is_public=is_public  # ✅ Save the toggle value
+            )
+        else:
+            serializer.save(
+                owner=self.request.user,
+                is_public=is_public
+            )
 
         
 class RegisterView(generics.CreateAPIView):

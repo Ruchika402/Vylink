@@ -57,16 +57,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // ✅ Date
-  const today = new Date();
-  const dateStr = today
-    .toLocaleDateString("en-US", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-    .toUpperCase();
+  
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -265,8 +256,8 @@ const Dashboard: React.FC = () => {
 
       {/* Upload Modal */}
       {showUpload && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-700">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">📤 Upload Image</h2>
               <button
