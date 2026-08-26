@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 import toast from "react-hot-toast";
+import Sidebar from "../components/Layout/Sidebar";
 
 interface File {
   id: number;
@@ -13,11 +15,14 @@ interface File {
 }
 
 const Files: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "public" | "private">("all");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareLink, setShareLink] = useState("");
@@ -53,7 +58,7 @@ const Files: React.FC = () => {
   const handleShare = async (file: File) => {
     try {
       const response = await api.post(`/images/${file.id}/share/`, {
-        expires_in: expiryDays,
+        expires_in: expiryDays
       });
       setShareLink(response.data.full_url || response.data.shareable_link);
       setSelectedFile(file);
@@ -69,9 +74,7 @@ const Files: React.FC = () => {
   };
 
   const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const matchesSearch = file.title.toLowerCase().includes(search.toLowerCase());
     const matchesFilter =
       filter === "all" ||
       (filter === "public" && file.is_public) ||
@@ -81,245 +84,221 @@ const Files: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Loading files...</div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-gray-400">Loading files...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">📁 My Files</h1>
-          <button
-            onClick={() => (window.location.href = "/dashboard")}
-            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition"
-          >
-            + Upload
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-900">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        {filteredFiles.length === 0 ? (
-          /* ✅ EMPTY STATE */
-          <div className="bg-white rounded-xl shadow-sm p-16 text-center">
-            <div className="text-7xl mb-4">📂</div>
-            <p className="text-gray-500 text-lg font-medium">No files found</p>
-            <p className="text-gray-400 text-sm mt-1">
-              {search
-                ? "Try adjusting your search or filter"
-                : "Upload your first file to get started!"}
-            </p>
-            {!search && (
+      <div className="lg:ml-64">
+        {/* Top Navbar */}
+        <nav className="bg-gray-800 shadow-sm border-b border-gray-700 sticky top-0 z-30">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
               <button
-                onClick={() => (window.location.href = "/dashboard")}
-                className="mt-6 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition"
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden text-gray-400 hover:text-white text-2xl"
               >
-                + Upload File
+                ☰
               </button>
-            )}
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => window.location.href = "/dashboard"}
+                  className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition text-sm"
+                >
+                  + Upload
+                </button>
+              </div>
+            </div>
           </div>
-        ) : (
-          /* ✅ FILES CONTENT */
-          <>
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4 items-center bg-white p-4 rounded-xl shadow-sm mb-6">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setView("grid")}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    view === "grid"
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  Grid
-                </button>
-                <button
-                  onClick={() => setView("list")}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                    view === "list"
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  List
-                </button>
-              </div>
+        </nav>
 
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as any)}
-                className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-white">📁 My Files</h1>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 items-center bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-700">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setView("grid")}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  view === "grid"
+                    ? "bg-primary text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
               >
-                <option value="all">All</option>
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Search files..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="border border-gray-200 rounded-lg px-3 py-1.5 flex-1 min-w-[200px] text-sm"
-              />
+                Grid
+              </button>
+              <button
+                onClick={() => setView("list")}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  view === "list"
+                    ? "bg-primary text-white"
+                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                }`}
+              >
+                List
+              </button>
             </div>
 
-            {/* Files Grid/List */}
-            {view === "grid" ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filteredFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition"
-                  >
-                    <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
-                      {file.file_url ? (
-                        <img
-                          src={file.file_url}
-                          alt={file.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl">
-                          📄
-                        </div>
-                      )}
-                    </div>
-                    <h4 className="font-medium text-gray-800 truncate">
-                      {file.title}
-                    </h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(file.uploaded_at).toLocaleDateString()}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${file.is_public ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}
-                      >
-                        {file.is_public ? "Public" : "Private"}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        {file.view_count} views
-                      </span>
-                    </div>
-                    <div className="flex gap-2 mt-3">
-                      <button
-                        onClick={() => handleShare(file)}
-                        className="flex-1 text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary-dark"
-                      >
-                        Share
-                      </button>
-                      <button
-                        onClick={() => handleDelete(file.id)}
-                        className="flex-1 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl shadow-sm divide-y">
-                {filteredFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    className="flex items-center justify-between p-4 hover:bg-gray-50 transition"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-2xl flex-shrink-0">📄</span>
-                      <div className="min-w-0">
-                        <p className="font-medium text-gray-800 truncate">
-                          {file.title}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(file.uploaded_at).toLocaleDateString()} •{" "}
-                          {file.view_count} views
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${file.is_public ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}
-                      >
-                        {file.is_public ? "Public" : "Private"}
-                      </span>
-                      <button
-                        onClick={() => handleShare(file)}
-                        className="text-sm bg-primary text-white px-3 py-1 rounded hover:bg-primary-dark"
-                      >
-                        Share
-                      </button>
-                      <button
-                        onClick={() => handleDelete(file.id)}
-                        className="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as any)}
+              className="bg-gray-700 text-gray-300 border border-gray-600 rounded-lg px-3 py-1.5 text-sm"
+            >
+              <option value="all">All files</option>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
 
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
-              <p>
-                Showing {filteredFiles.length} of {files.length} files
+            <input
+              type="text"
+              placeholder="Search files..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-1.5 flex-1 min-w-[200px] text-sm placeholder-gray-400"
+            />
+          </div>
+
+          {/* Files List */}
+          {filteredFiles.length === 0 ? (
+            <div className="bg-gray-800 rounded-xl shadow-sm p-12 text-center border border-gray-700">
+              <div className="text-6xl mb-4">📂</div>
+              <p className="text-gray-400 text-lg">No files found</p>
+              <p className="text-gray-500 text-sm mt-1">
+                {search ? "Try adjusting your search" : "Upload your first file to get started!"}
               </p>
-              <div className="flex gap-2">
-                <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                  ←
-                </button>
-                <button className="px-3 py-1 bg-primary text-white rounded-lg">
-                  1
-                </button>
-                <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                  2
-                </button>
-                <button className="px-3 py-1 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                  →
-                </button>
-              </div>
             </div>
-          </>
-        )}
+          ) : view === "list" ? (
+            <div className="bg-gray-800 rounded-xl shadow-sm divide-y divide-gray-700 border border-gray-700">
+  {filteredFiles.map((file) => (
+    <div key={file.id} className="px-6 py-4 hover:bg-gray-700/50 transition flex items-center justify-between">
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="text-2xl flex-shrink-0">📄</span>
+        <div className="min-w-0">
+          <p className="font-medium text-white">{file.title}</p>
+          <p className="text-xs text-gray-400">
+            {new Date(file.uploaded_at).toLocaleDateString()} • {file.view_count} views
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4 flex-shrink-0">
+        <span className={`text-xs px-2.5 py-1 rounded-full ${
+          file.is_public
+            ? "bg-green-900/50 text-green-400 border border-green-700"
+            : "bg-gray-700 text-gray-400 border border-gray-600"
+        }`}>
+          {file.is_public ? "Public" : "Private"}
+        </span>
+        {/* ✅ Share as text link */}
+        <button
+          onClick={() => handleShare(file)}
+          className="text-sm text-primary hover:underline"
+        >
+          Share
+        </button>
+        {/* ✅ Delete as text link */}
+        <button
+          onClick={() => handleDelete(file.id)}
+          className="text-sm text-red-400 hover:underline"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredFiles.map((file) => (
+                <div key={file.id} className="bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-700 hover:border-gray-500 transition">
+                  <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden mb-2">
+                    {file.file_url ? (
+                      <img src={file.file_url} alt={file.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">📄</div>
+                    )}
+                  </div>
+                  <h4 className="font-medium text-white truncate">{file.title}</h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(file.uploaded_at).toLocaleDateString()}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      file.is_public
+                        ? "bg-green-900/50 text-green-400 border border-green-700"
+                        : "bg-gray-700 text-gray-400 border border-gray-600"
+                    }`}>
+                      {file.is_public ? "Public" : "Private"}
+                    </span>
+                    <span className="text-xs text-gray-400">{file.view_count} views</span>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => handleShare(file)}
+                      className="flex-1 text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary-dark"
+                    >
+                      Share
+                    </button>
+                    <button
+                      onClick={() => handleDelete(file.id)}
+                      className="flex-1 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="flex justify-between items-center mt-6 text-sm text-gray-400">
+            <p>Showing {filteredFiles.length} of {files.length} files</p>
+            <div className="flex gap-2">
+              <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">←</button>
+              <button className="px-3 py-1 bg-primary text-white rounded-lg">1</button>
+              <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">→</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Share Modal */}
       {showShareModal && selectedFile && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-700">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">🔗 Share File</h2>
+              <h2 className="text-xl font-bold text-white">🔗 Share File</h2>
               <button
                 onClick={() => setShowShareModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="text-gray-400 hover:text-white text-2xl"
               >
                 ×
               </button>
             </div>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
                 <span className="text-2xl">📄</span>
                 <div>
-                  <p className="font-medium">{selectedFile.title}</p>
-                  <p className="text-xs text-gray-500">
-                    {selectedFile.view_count} views
-                  </p>
+                  <p className="font-medium text-white">{selectedFile.title}</p>
+                  <p className="text-xs text-gray-400">{selectedFile.view_count} views</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Link Expires
-                </label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Link Expires</label>
                 <select
                   value={expiryDays}
                   onChange={(e) => setExpiryDays(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-primary outline-none"
                 >
                   <option value={1}>1 day</option>
                   <option value={7}>7 days</option>
@@ -333,7 +312,7 @@ const Files: React.FC = () => {
                   type="text"
                   value={shareLink}
                   readOnly
-                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
+                  className="flex-1 px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-lg text-sm"
                 />
                 <button
                   onClick={copyToClipboard}
@@ -342,12 +321,12 @@ const Files: React.FC = () => {
                   Copy
                 </button>
               </div>
-              <p className="text-xs text-gray-400 text-center">
-                Anyone with this link can view this file
-              </p>
+
+              <p className="text-xs text-gray-400 text-center">Anyone with this link can view this file</p>
+
               <button
                 onClick={() => setShowShareModal(false)}
-                className="w-full py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                className="w-full py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition"
               >
                 Done
               </button>
