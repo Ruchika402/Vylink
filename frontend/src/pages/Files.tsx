@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api/client";
 import toast from "react-hot-toast";
 import Sidebar from "../components/Layout/Sidebar";
+import UploadForm from "../components/UploadForm";
 
 interface File {
   id: number;
@@ -15,7 +16,7 @@ interface File {
 }
 
 const Files: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   // eslint-disable-next-line
   const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ const Files: React.FC = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const [expiryDays, setExpiryDays] = useState(7);
+  const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
     fetchFiles();
@@ -58,7 +60,7 @@ const Files: React.FC = () => {
   const handleShare = async (file: File) => {
     try {
       const response = await api.post(`/images/${file.id}/share/`, {
-        expires_in: expiryDays
+        expires_in: expiryDays,
       });
       setShareLink(response.data.full_url || response.data.shareable_link);
       setSelectedFile(file);
@@ -74,7 +76,9 @@ const Files: React.FC = () => {
   };
 
   const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = file.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
     const matchesFilter =
       filter === "all" ||
       (filter === "public" && file.is_public) ||
@@ -107,7 +111,7 @@ const Files: React.FC = () => {
               </button>
               <div className="flex items-center space-x-4">
                 <button
-                  onClick={() => window.location.href = "/dashboard"}
+                  onClick={() => setShowUpload(true)}
                   className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition text-sm"
                 >
                   + Upload
@@ -173,83 +177,106 @@ const Files: React.FC = () => {
               <div className="text-6xl mb-4">📂</div>
               <p className="text-gray-400 text-lg">No files found</p>
               <p className="text-gray-500 text-sm mt-1">
-                {search ? "Try adjusting your search" : "Upload your first file to get started!"}
+                {search
+                  ? "Try adjusting your search"
+                  : "Upload your first file to get started!"}
               </p>
             </div>
           ) : view === "list" ? (
             <div className="bg-gray-800 rounded-xl shadow-sm divide-y divide-gray-700 border border-gray-700">
-  {filteredFiles.map((file) => (
-    <div key={file.id} className="px-6 py-4 hover:bg-gray-700/50 transition flex items-center justify-between">
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="text-2xl flex-shrink-0">📄</span>
-        <div className="min-w-0">
-          <p className="font-medium text-white">{file.title}</p>
-          <p className="text-xs text-gray-400">
-            {new Date(file.uploaded_at).toLocaleDateString()} • {file.view_count} views
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center gap-4 flex-shrink-0">
-        <span className={`text-xs px-2.5 py-1 rounded-full ${
-          file.is_public
-            ? "bg-green-900/50 text-green-400 border border-green-700"
-            : "bg-gray-700 text-gray-400 border border-gray-600"
-        }`}>
-          {file.is_public ? "Public" : "Private"}
-        </span>
-        {/* ✅ Share as text link */}
-        <button
-          onClick={() => handleShare(file)}
-          className="text-sm text-primary hover:underline"
-        >
-          Share
-        </button>
-        {/* ✅ Delete as text link */}
-        <button
-          onClick={() => handleDelete(file.id)}
-          className="text-sm text-red-400 hover:underline"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredFiles.map((file) => (
-                <div key={file.id} className="bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-700 hover:border-gray-500 transition">
-                  <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden mb-2">
-                    {file.file_url ? (
-                      <img src={file.file_url} alt={file.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">📄</div>
-                    )}
+                <div
+                  key={file.id}
+                  className="px-6 py-4 hover:bg-gray-700/50 transition flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-2xl flex-shrink-0">📄</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-white">{file.title}</p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(file.uploaded_at).toLocaleDateString()} •{" "}
+                        {file.view_count} views
+                      </p>
+                    </div>
                   </div>
-                  <h4 className="font-medium text-white truncate">{file.title}</h4>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(file.uploaded_at).toLocaleDateString()}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      file.is_public
-                        ? "bg-green-900/50 text-green-400 border border-green-700"
-                        : "bg-gray-700 text-gray-400 border border-gray-600"
-                    }`}>
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <span
+                      className={`text-xs px-2.5 py-1 rounded-full ${
+                        file.is_public
+                          ? "bg-green-900/50 text-green-400 border border-green-700"
+                          : "bg-gray-700 text-gray-400 border border-gray-600"
+                      }`}
+                    >
                       {file.is_public ? "Public" : "Private"}
                     </span>
-                    <span className="text-xs text-gray-400">{file.view_count} views</span>
-                  </div>
-                  <div className="flex gap-2 mt-3">
+                    {/* ✅ Text links for Share & Delete */}
                     <button
                       onClick={() => handleShare(file)}
-                      className="flex-1 text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary-dark"
+                      className="text-sm text-primary hover:underline"
                     >
                       Share
                     </button>
                     <button
                       onClick={() => handleDelete(file.id)}
-                      className="flex-1 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      className="text-sm text-red-400 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {filteredFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-700 hover:border-gray-500 transition"
+                >
+                  <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden mb-2">
+                    {file.file_url ? (
+                      <img
+                        src={file.file_url}
+                        alt={file.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">
+                        📄
+                      </div>
+                    )}
+                  </div>
+                  <h4 className="font-medium text-white truncate">
+                    {file.title}
+                  </h4>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(file.uploaded_at).toLocaleDateString()}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        file.is_public
+                          ? "bg-green-900/50 text-green-400 border border-green-700"
+                          : "bg-gray-700 text-gray-400 border border-gray-600"
+                      }`}
+                    >
+                      {file.is_public ? "Public" : "Private"}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {file.view_count} views
+                    </span>
+                  </div>
+                  {/* ✅ Grid view text links (consistent with list) */}
+                  <div className="flex gap-3 mt-3">
+                    <button
+                      onClick={() => handleShare(file)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Share
+                    </button>
+                    <button
+                      onClick={() => handleDelete(file.id)}
+                      className="text-xs text-red-400 hover:underline"
                     >
                       Delete
                     </button>
@@ -259,13 +286,28 @@ const Files: React.FC = () => {
             </div>
           )}
 
-          {/* Pagination */}
+          {/* ✅ Pagination - hides next when only 1 page */}
           <div className="flex justify-between items-center mt-6 text-sm text-gray-400">
-            <p>Showing {filteredFiles.length} of {files.length} files</p>
+            <p>
+              Showing {filteredFiles.length} of {files.length} files
+            </p>
             <div className="flex gap-2">
-              <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">←</button>
-              <button className="px-3 py-1 bg-primary text-white rounded-lg">1</button>
-              <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">→</button>
+              <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">
+                ←
+              </button>
+              <button className="px-3 py-1 bg-primary text-white rounded-lg">
+                1
+              </button>
+              {files.length > 10 && (
+                <>
+                  <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">
+                    2
+                  </button>
+                  <button className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 transition">
+                    →
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -288,13 +330,19 @@ const Files: React.FC = () => {
               <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
                 <span className="text-2xl">📄</span>
                 <div>
-                  <p className="font-medium text-white">{selectedFile.title}</p>
-                  <p className="text-xs text-gray-400">{selectedFile.view_count} views</p>
+                  <p className="font-medium text-white">
+                    {selectedFile.title}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {selectedFile.view_count} views
+                  </p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Link Expires</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Link Expires
+                </label>
                 <select
                   value={expiryDays}
                   onChange={(e) => setExpiryDays(Number(e.target.value))}
@@ -322,7 +370,9 @@ const Files: React.FC = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-gray-400 text-center">Anyone with this link can view this file</p>
+              <p className="text-xs text-gray-400 text-center">
+                Anyone with this link can view this file
+              </p>
 
               <button
                 onClick={() => setShowShareModal(false)}
@@ -331,6 +381,29 @@ const Files: React.FC = () => {
                 Done
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Upload Modal */}
+      {showUpload && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-700">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-white">📤 Upload Image</h2>
+              <button
+                onClick={() => setShowUpload(false)}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <UploadForm
+              onUploadSuccess={() => {
+                setShowUpload(false);
+                fetchFiles();
+              }}
+            />
           </div>
         </div>
       )}
