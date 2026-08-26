@@ -57,6 +57,12 @@ const LandingPage: React.FC = () => {
               >
                 Pricing
               </a>
+              <Link
+          to="/public"
+          className="text-sm font-medium text-gray-600 hover:text-primary transition cursor-pointer"
+        >
+          Public Feed
+        </Link>
               {/* ✅ NEW: Docs */}
               <a
                 href="#!"
