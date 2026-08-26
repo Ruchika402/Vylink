@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Files from "./pages/Files";
+import PublicFeed from "./pages/PublicFeed";
 //import './App.css';
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/public" element={<PublicFeed />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
