@@ -4,7 +4,6 @@ import Hero from "./Hero";
 import Features from "./Features";
 
 const LandingPage: React.FC = () => {
- 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#6C63FF]/5 via-white to-[#00C9A7]/5">
       {/* Navbar */}
@@ -86,7 +85,7 @@ const LandingPage: React.FC = () => {
                 Sign In
                 {/* Dark Mode Toggle */}
               </Link>
-              
+
               <Link
                 to="/register"
                 className="bg-[#6C63FF] text-white px-6 py-2 rounded-lg hover:bg-[#5A52D5] transition"
@@ -156,69 +155,71 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-<section
-  id="pricing"
-  className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gray-50 rounded-2xl mt-16"
->
-  <div className="text-center mb-12">
-    <h2 className="text-3xl font-bold text-gray-900">Simple, Transparent Pricing</h2>
-    <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-      Choose the plan that works for you.
-    </p>
-  </div>
+      <section
+        id="pricing"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gray-50 rounded-2xl mt-16"
+      >
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+            Choose the plan that works for you.
+          </p>
+        </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-    {/* Free Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer">
-      <h3 className="text-xl font-semibold text-gray-900">Free</h3>
-      <p className="text-3xl font-bold text-primary mt-4">$0</p>
-      <p className="text-sm text-gray-500">per month</p>
-      <ul className="mt-6 space-y-3 text-sm text-gray-600">
-        <li>✓ 5 files per month</li>
-        <li>✓ 10MB file size limit</li>
-        <li>✓ Basic sharing</li>
-      </ul>
-      <button className="mt-6 w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">
-        Get Started
-      </button>
-    </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Free Plan */}
+          <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer">
+            <h3 className="text-xl font-semibold text-gray-900">Free</h3>
+            <p className="text-3xl font-bold text-primary mt-4">$0</p>
+            <p className="text-sm text-gray-500">per month</p>
+            <ul className="mt-6 space-y-3 text-sm text-gray-600">
+              <li>✓ 5 files per month</li>
+              <li>✓ 10MB file size limit</li>
+              <li>✓ Basic sharing</li>
+            </ul>
+            <button className="mt-6 w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">
+              Get Started
+            </button>
+          </div>
 
-    {/* Pro Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer relative">
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full">
-        RECOMMENDED
-      </div>
-      <h3 className="text-xl font-semibold text-gray-900">Pro</h3>
-      <p className="text-3xl font-bold text-primary mt-4">$9</p>
-      <p className="text-sm text-gray-500">per month</p>
-      <ul className="mt-6 space-y-3 text-sm text-gray-600">
-        <li>✓ Unlimited files</li>
-        <li>✓ 100MB file size limit</li>
-        <li>✓ Advanced sharing</li>
-        <li>✓ Analytics dashboard</li>
-      </ul>
-      <button className="mt-6 w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
-        Get Started
-      </button>
-    </div>
+          {/* Pro Plan */}
+          <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full">
+              RECOMMENDED
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900">Pro</h3>
+            <p className="text-3xl font-bold text-primary mt-4">$9</p>
+            <p className="text-sm text-gray-500">per month</p>
+            <ul className="mt-6 space-y-3 text-sm text-gray-600">
+              <li>✓ Unlimited files</li>
+              <li>✓ 100MB file size limit</li>
+              <li>✓ Advanced sharing</li>
+              <li>✓ Analytics dashboard</li>
+            </ul>
+            <button className="mt-6 w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+              Get Started
+            </button>
+          </div>
 
-    {/* Enterprise Plan */}
-    <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer">
-      <h3 className="text-xl font-semibold text-gray-900">Enterprise</h3>
-      <p className="text-3xl font-bold text-primary mt-4">$29</p>
-      <p className="text-sm text-gray-500">per month</p>
-      <ul className="mt-6 space-y-3 text-sm text-gray-600">
-        <li>✓ Unlimited files</li>
-        <li>✓ 1GB file size limit</li>
-        <li>✓ Custom branding</li>
-        <li>✓ Priority support</li>
-      </ul>
-      <button className="mt-6 w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">
-        Contact Sales
-      </button>
-    </div>
-  </div>
-</section>
+          {/* Enterprise Plan */}
+          <div className="bg-white p-8 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary hover:shadow-[0_0_25px_rgba(108,99,255,0.3)] transition-all duration-300 cursor-pointer">
+            <h3 className="text-xl font-semibold text-gray-900">Enterprise</h3>
+            <p className="text-3xl font-bold text-primary mt-4">$29</p>
+            <p className="text-sm text-gray-500">per month</p>
+            <ul className="mt-6 space-y-3 text-sm text-gray-600">
+              <li>✓ Unlimited files</li>
+              <li>✓ 1GB file size limit</li>
+              <li>✓ Custom branding</li>
+              <li>✓ Priority support</li>
+            </ul>
+            <button className="mt-6 w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition">
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 border-t border-gray-800 mt-20">

@@ -12,10 +12,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: "📊" },
-    { path: "/files", label: "My Files", icon: "📁" },
-    { path: "/analytics", label: "Analytics", icon: "📈" },
-    { path: "/settings", label: "Settings", icon: "⚙️" },
+    { path: "/dashboard", label: "Dashboard" },
+    { path: "/files", label: "My files" },
+    { path: "/analytics", label: "Analytics" },
+    { path: "/settings", label: "Settings" },
   ];
 
   return (
@@ -30,42 +30,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 border-r border-gray-800 z-50 transform transition-transform duration-300 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* User Greeting (instead of logo) */}
-        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-primary/5 to-transparent">
-          <p className="text-sm text-gray-500">Welcome back,</p>
-          <p className="text-xl font-bold text-gray-900">
-            {user?.first_name || user?.username || "User"} 👋
-          </p>
-          <p className="text-xs text-gray-400 mt-1">{user?.email}</p>
+        {/* Brand */}
+        <div className="p-6 border-b border-gray-800">
+          <h1 className="text-xl font-bold text-white">vylink</h1>
         </div>
 
-        {/* Navigation */}
+        {/* User Info */}
+        <div className="p-6 border-b border-gray-800">
+          <p className="text-white font-medium">
+            {user?.first_name || user?.username || "User"}
+          </p>
+          <p className="text-sm text-gray-400">{user?.email}</p>
+        </div>
+
+        {/* Navigation - Clean text only */}
         <nav className="p-4 space-y-1">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition ${
+              onClick={onClose}
+              className={`block px-4 py-2.5 rounded-lg transition ${
                 location.pathname === item.path
-                  ? "bg-primary text-white"
-                  : "text-gray-700 hover:bg-gray-100"
+                  ? "bg-gray-800 text-white"
+                  : "text-gray-400 hover:bg-gray-800 hover:text-white"
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
               <span className="font-medium">{item.label}</span>
             </Link>
           ))}
         </nav>
 
         {/* Logout */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-gray-50">
+        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-800">
           <button
             onClick={logout}
-            className="w-full px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            className="w-full px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition text-left"
           >
             Logout
           </button>
