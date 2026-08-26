@@ -85,45 +85,56 @@ const LandingPage: React.FC = () => {
       <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <Features />
       </section>
+{/* ===== ABOUT SECTION ===== */}
+<section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div className="text-center mb-12">
+    <h2 className="text-3xl font-bold text-gray-900">About Vylink</h2>
+    <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+      A security-focused image sharing platform built as a full-stack portfolio project.
+    </p>
+  </div>
 
-      {/* ===== ABOUT SECTION ===== */}
-      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">About Vylink</h2>
-          <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-            A security-focused image sharing platform built as a full-stack portfolio project.
-          </p>
-        </div>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {/* Card 1 - Portfolio Project */}
+    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-900">Portfolio Project</h3>
+      <p className="mt-2 text-gray-500 text-sm leading-relaxed">
+        Built to demonstrate full-stack development skills with Django, React, and security best practices.
+      </p>
+    </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1 */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-xl font-semibold text-gray-900">Portfolio Project</h3>
-            <p className="mt-2 text-gray-500 text-sm leading-relaxed">
-              Built to demonstrate full-stack development skills with Django, React, and security best practices.
-            </p>
-          </div>
+    {/* Card 2 - Security First */}
+    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-900">Security First</h3>
+      <p className="mt-2 text-gray-500 text-sm leading-relaxed">
+        Follows OWASP Top 10 guidelines with JWT authentication, httpOnly cookies, and input sanitization.
+      </p>
+    </div>
 
-          {/* Card 2 */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div className="text-4xl mb-4">🔒</div>
-            <h3 className="text-xl font-semibold text-gray-900">Security First</h3>
-            <p className="mt-2 text-gray-500 text-sm leading-relaxed">
-              Follows OWASP Top 10 guidelines with JWT authentication, httpOnly cookies, and input sanitization.
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div className="text-4xl mb-4">📖</div>
-            <h3 className="text-xl font-semibold text-gray-900">Open Source</h3>
-            <p className="mt-2 text-gray-500 text-sm leading-relaxed">
-              Source code is publicly available on GitHub. Built with transparency.
-            </p>
-          </div>
-        </div>
-      </section>
+    {/* Card 3 - Open Source */}
+    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
+      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-gray-900">Open Source</h3>
+      <p className="mt-2 text-gray-500 text-sm leading-relaxed">
+        Source code is publicly available on GitHub. Built with transparency.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-gray-300 border-t border-gray-800 mt-20">
