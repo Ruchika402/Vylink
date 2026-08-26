@@ -61,9 +61,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ===== Allauth Settings =====
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Allow both
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}  # Allow both
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # ✅ Email confirmation required
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # Auto-login after confirm
 
