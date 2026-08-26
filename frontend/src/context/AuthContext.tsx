@@ -76,41 +76,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const register = async (data: any) => {
-  try {
-    console.log("📤 Sending registration data:", data);
+    try {
+      console.log("📤 Sending registration data:", data);
 
-    const payload = {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      confirm_password: data.confirm_password || data.password,
-      first_name: data.first_name,
-      last_name: data.last_name,
-    };
+      const payload = {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        confirm_password: data.confirm_password || data.password,
+        first_name: data.first_name,
+        last_name: data.last_name,
+      };
 
-    // Step 1: Register the user
-    await api.post("/register/", payload);
+      // Step 1: Register the user
+      await api.post("/register/", payload);
 
-    // Step 2: Auto-login after registration
-    const loginResponse = await api.post("/token/", {
-      username: data.username,
-      password: data.password
-    });
+      // Step 2: Auto-login after registration
+      const loginResponse = await api.post("/token/", {
+        username: data.username,
+        password: data.password,
+      });
 
-    localStorage.setItem("access_token", loginResponse.data.access);
-    localStorage.setItem("refresh_token", loginResponse.data.refresh);
+      localStorage.setItem("access_token", loginResponse.data.access);
+      localStorage.setItem("refresh_token", loginResponse.data.refresh);
 
-    // Step 3: Get user data
-    const userResponse = await api.get("/user/");
-    setUser(userResponse.data);
+      // Step 3: Get user data
+      const userResponse = await api.get("/user/");
+      setUser(userResponse.data);
 
-    toast.success("Account created! Welcome to Vylink 🎉");
-  } catch (error: any) {
-    console.error("❌ Registration error:", error.response?.data);
-    toast.error(error.response?.data?.detail || "Registration failed");
-    throw error;
-  }
-};
+      toast.success("Account created! Welcome to Vylink 🎉");
+    } catch (error: any) {
+      console.error("❌ Registration error:", error.response?.data);
+      toast.error(error.response?.data?.detail || "Registration failed");
+      throw error;
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem("access_token");
