@@ -15,15 +15,11 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db import models 
 import uuid
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.conf import settings
+
+# ========== IMAGE VIEWSET ==========
 class ImageViewSet(viewsets.ModelViewSet):
-    """
-    Full CRUD for images.
-    - GET /api/images/ → List user's images
-    - POST /api/images/ → Upload new image
-    - GET /api/images/{id}/ → Get single image
-    - PUT /api/images/{id}/ → Update image
-    - DELETE /api/images/{id}/ → Delete image
-    """
     serializer_class = ImageSerializer
     permission_classes = [permissions.IsAuthenticated]
     
@@ -34,62 +30,59 @@ class ImageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Set owner automatically and extract file metadata"""
         file = self.request.FILES.get('file')
+        is_public = self.request.data.get('is_public', 'false').lower() == 'true'
+        
         if file:
             serializer.save(
                 owner=self.request.user,
                 file_size=file.size,
-                mime_type=file.content_type
+                mime_type=file.content_type,
+                is_public=is_public
             )
         else:
-            serializer.save(owner=self.request.user)
+            serializer.save(
+                owner=self.request.user,
+                is_public=is_public
+            )
     
     @action(detail=True, methods=['post'])
     def share(self, request, pk=None):
-        """Generate a shareable link for an image with expiry"""
         image = self.get_object()
-    
-    # Check ownership
+        
         if image.owner != request.user:
             return Response(
                 {"error": "You don't have permission to share this image"},
                 status=status.HTTP_403_FORBIDDEN
             )
-    
-    # Get expiry days from request (default: 7)
+        
         expires_in = request.data.get('expires_in', 7)
-    
-    # Generate unique link
         link = image.generate_shareable_link()
-    
-    # Set expiry (if expires_in > 0)
+        
         if expires_in and expires_in > 0:
             from django.utils import timezone
             from datetime import timedelta
             image.expires_at = timezone.now() + timedelta(days=expires_in)
             image.save(update_fields=['expires_at'])
         else:
-        # Never expires
             image.expires_at = None
             image.save(update_fields=['expires_at'])
-    
+        
         return Response({
             "shareable_link": link,
             "full_url": request.build_absolute_uri(f'/api/images/share/{link}/'),
             "expires_at": image.expires_at,
             "expires_in": expires_in if expires_in > 0 else "Never"
         })
-
     
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
     def public(self, request):
-        """View public images (no auth required)"""
         public_images = Image.objects.filter(is_public=True)[:20]
         serializer = self.get_serializer(public_images, many=True)
         return Response(serializer.data)
 
-# ========== PUBLIC SHARE VIEW (No Auth) ==========
+
+# ========== PUBLIC SHARE VIEW ==========
 class PublicShareView(APIView):
-    """View a shared image without authentication"""
     permission_classes = [permissions.AllowAny]
     
     def get(self, request, link):
@@ -97,7 +90,6 @@ class PublicShareView(APIView):
         
         image = get_object_or_404(Image, shareable_link=link)
         
-        # ✅ Check if link is expired
         if image.expires_at and timezone.now() > image.expires_at:
             return Response(
                 {"error": "This link has expired"},
@@ -107,32 +99,16 @@ class PublicShareView(APIView):
         image.increment_view_count()
         serializer = ImageSerializer(image, context={'request': request})
         return Response(serializer.data)
-    def perform_create(self, serializer):
-        """Set owner automatically and extract file metadata"""
-        file = self.request.FILES.get('file')
-        is_public = self.request.data.get('is_public', 'false').lower() == 'true'
-    
-        if file:
-            serializer.save(
-                owner=self.request.user,
-                file_size=file.size,
-                mime_type=file.content_type,
-                is_public=is_public  # ✅ Save the toggle value
-            )
-        else:
-            serializer.save(
-                owner=self.request.user,
-                is_public=is_public
-            )
 
-        
+
+# ========== AUTH VIEWS ==========
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
-        print("🔍 Received data:", request.data)  # Debug
+        print("🔍 Received data:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -144,16 +120,17 @@ class RegisterView(generics.CreateAPIView):
                     "email": user.email
                 }
             }, status=status.HTTP_201_CREATED)
-        print("❌ Errors:", serializer.errors)  # Debug
+        print("❌ Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
+
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
 
 class DashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -169,5 +146,62 @@ class DashboardStatsView(APIView):
             'total_files': total_files,
             'active_links': public_files,
             'total_views': total_views,
-            'expiring_soon': 0,  # Add expiry logic later
+            'expiring_soon': 0,
         })
+
+
+# ========== COOKIE JWT VIEWS ==========
+class CookieTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        access = response.data.get('access')
+        refresh = response.data.get('refresh')
+        if access:
+            response.set_cookie(
+                'access_token',
+                access,
+                httponly=True,
+                samesite='Lax',
+                secure=not settings.DEBUG,
+                max_age=900
+            )
+        if refresh:
+            response.set_cookie(
+                'refresh_token',
+                refresh,
+                httponly=True,
+                samesite='Lax',
+                secure=not settings.DEBUG,
+                max_age=604800
+            )
+        return response
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        # ✅ Try to get the refresh token from the cookie first
+        refresh_token = request.COOKIES.get('refresh_token')
+        
+        # ✅ If the cookie isn't there, check the body
+        if not refresh_token:
+            refresh_token = request.data.get('refresh')
+        
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token missing"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # ✅ Pass it into the body
+        request.data['refresh'] = refresh_token
+        return super().post(request, *args, **kwargs)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        response = Response({'message': 'Logged out'})
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
