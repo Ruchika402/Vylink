@@ -1,15 +1,16 @@
+# config/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from images.views import UserView, DashboardStatsView, RegisterView
+from images.views import UserView, DashboardStatsView, RegisterView,CookieTokenObtainPairView,CookieTokenRefreshView,LogoutView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('images.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/', include('images.urls')), # This catches all API routes
+    path('api/token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/user/', UserView.as_view(), name='user'),
     path('api/dashboard/stats/', DashboardStatsView.as_view(), name='dashboard_stats'),
