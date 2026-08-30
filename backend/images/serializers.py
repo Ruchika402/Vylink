@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Image
 from django.contrib.auth.models import User
+import bleach
 
 class ImageSerializer(serializers.ModelSerializer):
     owner_username = serializers.ReadOnlyField(source='owner.username')
@@ -17,22 +18,34 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['owner', 'view_count', 'shareable_link', 'uploaded_at']
     
     def get_file_url(self, obj):
-        """Return file URL (will be pre-signed S3 URL in production)"""
         request = self.context.get('request')
         if request and obj.file:
             return request.build_absolute_uri(obj.file.url)
         return None
     
     def validate_title(self, value):
-        """Prevent XSS by validating title"""
-        if any(char in value for char in '<>"{}/'):
+        """Sanitize title to prevent XSS"""
+        sanitized = bleach.clean(value, strip=True)
+        if not sanitized:
+            raise serializers.ValidationError("Title cannot be empty or contain only invalid characters.")
+        if any(char in sanitized for char in '<>"{}/'):
             raise serializers.ValidationError("Title contains invalid characters.")
+        return sanitized
+    
+    def validate_description(self, value):
+        """Sanitize description to prevent XSS"""
+        if value:
+            sanitized = bleach.clean(value, strip=True)
+            return sanitized
         return value
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email','first_name', 'last_name', 'date_joined']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'date_joined']
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True, min_length=8)
@@ -40,6 +53,23 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'confirm_password', 'first_name', 'last_name']
+
+    def validate_username(self, value):
+        """Sanitize username"""
+        sanitized = bleach.clean(value, strip=True)
+        if not sanitized or len(sanitized) < 3:
+            raise serializers.ValidationError("Username must be at least 3 characters.")
+        return sanitized
+
+    def validate_first_name(self, value):
+        if value:
+            return bleach.clean(value, strip=True)
+        return value
+
+    def validate_last_name(self, value):
+        if value:
+            return bleach.clean(value, strip=True)
+        return value
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
