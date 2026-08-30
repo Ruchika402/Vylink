@@ -117,7 +117,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ✅ PostgreSQL Database Configuration (Fixed)
+# ✅ PostgreSQL Database Configuration 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -129,7 +129,7 @@ DATABASES = {
     }
 }
 
-# ✅ Redis Cache (Optional for Day 1)
+# ✅ Redis Cache
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -239,6 +239,8 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+# ===== Rate Limiting =====
+RATELIMIT_VIEW = 'images.views.rate_limit_exceeded'
 
 # ✅ These should NOT be in development (only production)
 # DEBUG = False  ❌ REMOVE THIS

@@ -17,6 +17,18 @@ from django.db import models
 import uuid
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+# ========== RATE LIMIT EXCEEDED HANDLER ==========
+def rate_limit_exceeded(request, exception):
+    """Custom response when rate limit is exceeded"""
+    return JsonResponse(
+        {"error": "Too many requests. Please try again later."},
+        status=429
+    )
+
 
 # ========== IMAGE VIEWSET ==========
 class ImageViewSet(viewsets.ModelViewSet):
@@ -45,8 +57,15 @@ class ImageViewSet(viewsets.ModelViewSet):
                 is_public=is_public
             )
     
+    @method_decorator(ratelimit(key='user', rate='10/m', method='POST', block=True))
+    def create(self, request, *args, **kwargs):
+        """Rate limit uploads: 10 per minute per user"""
+        return super().create(request, *args, **kwargs)
+    
     @action(detail=True, methods=['post'])
+    @method_decorator(ratelimit(key='user', rate='20/m', method='POST', block=True))
     def share(self, request, pk=None):
+        """Generate a shareable link with rate limiting: 20 per minute"""
         image = self.get_object()
         
         if image.owner != request.user:
@@ -152,7 +171,9 @@ class DashboardStatsView(APIView):
 
 # ========== COOKIE JWT VIEWS ==========
 class CookieTokenObtainPairView(TokenObtainPairView):
+    @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True))
     def post(self, request, *args, **kwargs):
+        """Rate limit login: 5 attempts per minute per IP"""
         response = super().post(request, *args, **kwargs)
         access = response.data.get('access')
         refresh = response.data.get('refresh')
@@ -179,20 +200,14 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
-        # ✅ Try to get the refresh token from the cookie first
         refresh_token = request.COOKIES.get('refresh_token')
-        
-        # ✅ If the cookie isn't there, check the body
         if not refresh_token:
             refresh_token = request.data.get('refresh')
-        
         if not refresh_token:
             return Response(
                 {"detail": "Refresh token missing"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # ✅ Pass it into the body
         request.data['refresh'] = refresh_token
         return super().post(request, *args, **kwargs)
 
