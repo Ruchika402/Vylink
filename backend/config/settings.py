@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'storages',
+    'csp',
     
     # Local apps
     'images',
@@ -52,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'csp.middleware.CSPMiddleware',
+    'config.middleware.SecurityHeadersMiddleware',
 ]
 
 # ===== Authentication Backends =====
@@ -241,6 +244,25 @@ CORS_ALLOW_HEADERS = [
 
 # ===== Rate Limiting =====
 RATELIMIT_VIEW = 'images.views.rate_limit_exceeded'
+
+# Prevents clickjacking
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+
+
+# ===== CONTENT SECURITY POLICY =====
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")  # Needed for Tailwind
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_FONT_SRC = ("'self'", "data:")
+CSP_CONNECT_SRC = ("'self'", "http://localhost:8000", "http://localhost:3000")
+CSP_FRAME_ANCESTORS = ("'none'",)
+CSP_FORM_ACTION = ("'self'",)
+CSP_BASE_URI = ("'self'",)
+
 
 # ✅ These should NOT be in development (only production)
 # DEBUG = False  ❌ REMOVE THIS
