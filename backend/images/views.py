@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from django.core.files.storage import default_storage
 
 # ========== RATE LIMIT EXCEEDED HANDLER ==========
 def rate_limit_exceeded(request, exception):
@@ -116,8 +116,18 @@ class PublicShareView(APIView):
             )
         
         image.increment_view_count()
+        file_url = None
+        if image.file:
+            try:
+                file_url = default_storage.url(image.file.name)
+            except Exception as e:
+                print(f"Error generating pre-signed URL: {e}")
+        
         serializer = ImageSerializer(image, context={'request': request})
-        return Response(serializer.data)
+        data = serializer.data
+        data['file_url'] = file_url  # ✅ Add pre-signed URL to response
+        
+        return Response(data)
 
 
 # ========== AUTH VIEWS ==========

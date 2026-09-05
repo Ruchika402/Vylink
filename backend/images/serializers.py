@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Image
 from django.contrib.auth.models import User
+#from django.core.files.storage import default_storage
 import bleach
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -12,15 +13,18 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'description', 'file', 'file_url',
             'thumbnail', 'file_size', 'mime_type', 'view_count',
-            'is_public', 'shareable_link', 'uploaded_at',
-            'owner_username'
+            'is_public', 'shareable_link', 'uploaded_at', 'updated_at',
+            'expires_at', 'owner_username'
         ]
-        read_only_fields = ['owner', 'view_count', 'shareable_link', 'uploaded_at']
+        read_only_fields = ['owner', 'view_count', 'shareable_link', 'uploaded_at', 'updated_at']
     
     def get_file_url(self, obj):
-        request = self.context.get('request')
-        if request and obj.file:
-            return request.build_absolute_uri(obj.file.url)
+        """Return file URL"""
+        if obj.file:
+            try:
+                return obj.file.url
+            except:
+                return None
         return None
     
     def validate_title(self, value):
