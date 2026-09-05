@@ -133,11 +133,11 @@ AWS_STORAGE_BUCKET_NAME=your-bucket-name
 
 | Phase | Status |
 |---|---|
-| Backend API (Days 1–3) | ✅ Complete |
-| Frontend UI (Days 4–6) | ✅ Complete |
-| Core Security (Days 7–8) | ✅ Complete |
-| Cloud Storage (Day 9) | ✅ Complete |
-| Docker & AWS Deployment (Days 10–11) | 📝 In Progress |
+| Backend API  | ✅ Complete |
+| Frontend UI | ✅ Complete |
+| Core Security | ✅ Complete |
+| Cloud Storage | ✅ Complete |
+| Docker & AWS Deployment | 📝 In Progress |
 | Production Polish | 📝 Planned |
 
 ---
@@ -153,4 +153,4 @@ MIT © 2026 Ruchika Adak
 - **GitHub:** [Ruchika402/Vylink](https://github.com/Ruchika402/Vylink)
 - **Live Demo:** Coming soon after deployment
 
-*Built with security-first principles.*
+
