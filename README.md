@@ -1,5 +1,10 @@
-# 🔒 Vylink
+<div align="center">
 
+![Header](https://capsule-render.vercel.app/api?type=waving&color=0:0F2027,50:203A43,100:2C5364&height=220&section=header&text=Vylink&fontSize=65&fontColor=00FF9C&fontAlignY=35&animation=twinkling&desc=Secure%20Image-Sharing%20Platform&descAlignY=58&descAlign=50&descSize=18&fontColor2=ffffff)
+
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1000&color=00FF9C&center=true&vCenter=true&width=600&lines=OWASP+Top+10+Compliant;JWT+%2B+Google+OAuth+Authentication;Pre-signed+S3+URLs+%7C+Rate+Limited+%7C+Encrypted)](https://git.io/typing-svg)
+
+</div>
 **A secure image-sharing platform with enterprise-grade security features.**
 
 Built with React (TypeScript), Django REST Framework, PostgreSQL, Redis, and AWS S3.
