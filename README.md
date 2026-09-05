@@ -4,32 +4,58 @@
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1000&color=00FF9C&center=true&vCenter=true&width=600&lines=OWASP+Top+10+Compliant;JWT+%2B+Google+OAuth+Authentication;Pre-signed+S3+URLs+%7C+Rate+Limited+%7C+Encrypted)](https://git.io/typing-svg)
 
+![License](https://img.shields.io/badge/license-MIT-00FF9C?style=flat-square)
+![Status](https://img.shields.io/badge/status-in%20development-203A43?style=flat-square&labelColor=0F2027)
+![OWASP](https://img.shields.io/badge/OWASP-Top%2010-2C5364?style=flat-square&labelColor=0F2027)
+
 </div>
-**A secure image-sharing platform with enterprise-grade security features.**
 
-Built with React (TypeScript), Django REST Framework, PostgreSQL, Redis, and AWS S3.
-
-Vylink is a full-stack portfolio project demonstrating secure file sharing, authentication, and cloud storage integration. It follows **OWASP Top 10** guidelines and uses **pre-signed S3 URLs** for safe, time-limited file delivery.
-
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![License](https://img.shields.io/badge/license-MIT-blue)
+Vylink is a full-stack portfolio project demonstrating secure file sharing, authentication, and cloud storage integration — built to **OWASP Top 10** standards, with **pre-signed S3 URLs** for safe, time-limited file delivery.
 
 ---
 
-## Table of Contents
+## 📑 Table of Contents
 
-- [Tech Stack](#tech-stack)
+- [🛡️ Security Highlights](#️-security-highlights)
+- [🛠️ Tech Stack](#️-tech-stack)
 - [✅ Completed Features](#-completed-features)
 - [🚧 Under Construction](#-under-construction)
-- [Architecture](#architecture)
-- [Quick Start](#quick-start-local-development)
-- [Project Milestones](#project-milestones)
-- [License](#license)
-- [Connect](#connect)
+- [🏗️ Architecture](#️-architecture)
+- [🚀 Quick Start](#-quick-start-local-development)
+- [📊 Project Milestones](#-project-milestones)
+- [📄 License](#-license)
+- [🔗 Connect](#-connect)
 
 ---
 
-## Tech Stack
+## 🛡️ Security Highlights
+
+> The features that matter most for a project built around secure file delivery.
+
+- 🔐 **JWT auth via `httpOnly` cookies** — no tokens exposed to client-side JS
+- 🔑 **Google OAuth** — reduces password-based attack surface
+- 🧹 **Bleach input sanitization** — blocks stored/reflected XSS
+- 🛡️ **Full OWASP security header set** — CSP, HSTS, X-Frame-Options, nosniff
+- ⏱️ **60-second expiring pre-signed S3 URLs** — no public bucket exposure, ever
+- ⚡ **Rate limiting** on uploads and shares — throttles abuse and scraping
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-0F2027?style=for-the-badge&logo=tailwind-css&logoColor=00FF9C)
+![Django](https://img.shields.io/badge/Django-0C4B33?style=for-the-badge&logo=django&logoColor=00FF9C)
+![Python](https://img.shields.io/badge/Python-2C5364?style=for-the-badge&logo=python&logoColor=00FF9C)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-0F2027?style=for-the-badge&logo=postgresql&logoColor=00FF9C)
+![Redis](https://img.shields.io/badge/Redis-203A43?style=for-the-badge&logo=redis&logoColor=00FF9C)
+![AWS](https://img.shields.io/badge/AWS_S3-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=00FF9C)
+![Docker](https://img.shields.io/badge/Docker-0F2027?style=for-the-badge&logo=docker&logoColor=00FF9C)
+
+</div>
 
 | Category   | Technology |
 |------------|------------|
@@ -74,7 +100,7 @@ Vylink is a full-stack portfolio project demonstrating secure file sharing, auth
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 \```
 User Browser (React)
@@ -94,7 +120,7 @@ AWS S3 (pre-signed URLs for file access)
 
 ---
 
-## Quick Start (Local Development)
+## 🚀 Quick Start (Local Development)
 
 ### Prerequisites
 - Python 3.11+
@@ -102,60 +128,73 @@ AWS S3 (pre-signed URLs for file access)
 - PostgreSQL 15+
 - Redis 7+
 
-### Backend Setup
+<details>
+<summary><strong>⚙️ Backend Setup</strong></summary>
 
-```bash
+\```bash
 cd backend
 python -m venv venv
-source venv/bin/activate     
+source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
-```
+\```
 
-### Frontend Setup
+</details>
 
-```bash
+<details>
+<summary><strong>🎨 Frontend Setup</strong></summary>
+
+\```bash
 cd frontend
 pnpm install
 pnpm start
-```
+\```
 
-### Environment Variables
+</details>
+
+<details>
+<summary><strong>🔑 Environment Variables</strong></summary>
 
 Create a `.env` file in `backend/config/`:
 
-```env
+\```env
 DJANGO_SECRET_KEY=your-secret-key
 AWS_ACCESS_KEY_ID=your-aws-key
 AWS_SECRET_ACCESS_KEY=your-aws-secret
 AWS_STORAGE_BUCKET_NAME=your-bucket-name
-```
+\```
+
+</details>
 
 ---
 
-## Project Milestones
+## 📊 Project Milestones
 
 | Phase | Status |
 |---|---|
-| Backend API  | ✅ Complete |
-| Frontend UI | ✅ Complete |
-| Core Security | ✅ Complete |
-| Cloud Storage | ✅ Complete |
-| Docker & AWS Deployment | 📝 In Progress |
+| Backend API (Days 1–3) | ✅ Complete |
+| Frontend UI (Days 4–6) | ✅ Complete |
+| Core Security (Days 7–8) | ✅ Complete |
+| Cloud Storage (Day 9) | ✅ Complete |
+| Docker & AWS Deployment (Days 10–11) | 📝 In Progress |
 | Production Polish | 📝 Planned |
 
 ---
 
-## License
+## 📄 License
 
 MIT © 2026 Ruchika Adak
 
 ---
 
-## Connect
+## 🔗 Connect
 
-- **GitHub:** [Ruchika402/Vylink](https://github.com/Ruchika402/Vylink)
-- **Live Demo:** Coming soon after deployment
+<div align="center">
 
+[![GitHub](https://img.shields.io/badge/GitHub-Ruchika402%2FVylink-0F2027?style=for-the-badge&logo=github&logoColor=00FF9C)](https://github.com/Ruchika402/Vylink)
+![Live Demo](https://img.shields.io/badge/Live_Demo-Coming_Soon-203A43?style=for-the-badge&labelColor=0F2027)
 
+*Built with security-first principles.*
+
+</div>
