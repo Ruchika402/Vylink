@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
-import api from "../api/client";
+import api, { resetUnauthorizedFlag } from "../api/client";
 import toast from "react-hot-toast";
 
 interface User {
@@ -25,23 +25,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Check authentication ONLY ONCE on mount
   useEffect(() => {
     let isMounted = true;
-
+    let isRedirecting = false;
+const PUBLIC_PATHS = ['/login', '/register', '/'];
     const checkAuth = async () => {
+      // ✅ Reset unauthorized flag on auth check
+      resetUnauthorizedFlag();
+      
       try {
         const response = await api.get("/user/");
-        if (isMounted) setUser(response.data);
+        if (isMounted) {
+          setUser(response.data);
+          setLoading(false);
+        }
       } catch (error) {
-        // ✅ CRITICAL: Catch the error and just set user to null
         if (isMounted) {
           console.log("❌ Not authenticated:", error);
           setUser(null);
+          setLoading(false);
+          // ✅ Only redirect to login if not already on login page
+          const isPublicRoute = PUBLIC_PATHS.includes(window.location.pathname);
+          if (!isRedirecting && !isPublicRoute) {
+            isRedirecting = true;
+            window.location.href = "/login";
+          }
         }
-      } finally {
-        // ✅ CRITICAL: ALWAYS turn off loading, even if it errors
-        if (isMounted) setLoading(false);
       }
     };
 
@@ -49,13 +58,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => { isMounted = false; };
   }, []);
 
-  // ✅ Login
   const login = async (username: string, password: string) => {
     try {
+      // ✅ Reset unauthorized flag before login
+      resetUnauthorizedFlag();
+      
       await api.post("/token/", { username, password });
       const userResponse = await api.get("/user/");
       setUser(userResponse.data);
       toast.success("Welcome back! 🎉");
+      
+      // ✅ Redirect to dashboard after login
+      window.location.href = "/dashboard";
     } catch (error: any) {
       console.error("❌ Login error:", error.response?.data);
       toast.error(error.response?.data?.detail || "Invalid credentials");
@@ -63,9 +77,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // ✅ Register
   const register = async (data: any) => {
     try {
+      resetUnauthorizedFlag();
+      
       const payload = {
         username: data.username,
         email: data.email,
@@ -80,13 +95,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const userResponse = await api.get("/user/");
       setUser(userResponse.data);
       toast.success("Account created! Welcome to Vylink 🎉");
+      window.location.href = "/dashboard";
     } catch (error: any) {
       toast.error(error.response?.data?.detail || "Registration failed");
       throw error;
     }
   };
 
-  // ✅ Logout
   const logout = async () => {
     try {
       await api.post("/logout/");
