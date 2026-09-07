@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Image
 from django.contrib.auth.models import User
-#from django.core.files.storage import default_storage
+from django.core.files.storage import default_storage  
 import bleach
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -19,11 +19,13 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['owner', 'view_count', 'shareable_link', 'uploaded_at', 'updated_at']
     
     def get_file_url(self, obj):
-        """Return file URL"""
+        """Return pre-signed S3 URL for secure access"""
         if obj.file:
             try:
-                return obj.file.url
-            except:
+                # Generate pre-signed URL (60-second expiry)
+                return default_storage.url(obj.file.name)
+            except Exception as e:
+                print(f"Error generating pre-signed URL: {e}")
                 return None
         return None
     

@@ -180,6 +180,7 @@ class DashboardStatsView(APIView):
 
 
 # ========== COOKIE JWT VIEWS ==========
+@method_decorator(csrf_exempt, name='dispatch')
 class CookieTokenObtainPairView(TokenObtainPairView):
     @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True))
     def post(self, request, *args, **kwargs):
@@ -208,6 +209,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
         return response
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh_token')
