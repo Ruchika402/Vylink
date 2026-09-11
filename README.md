@@ -177,7 +177,7 @@ AWS_STORAGE_BUCKET_NAME=your-bucket-name
 | Frontend UI (Days 4–6) | ✅ Complete |
 | Core Security (Days 7–8) | ✅ Complete |
 | Cloud Storage (Day 9) | ✅ Complete |
-| Docker & AWS Deployment (Days 10–11) | 📝 In Progress |
+| Docker & AWS Deployment (Days 10–11) | ✅ Complete |
 | Production Polish | 📝 Planned |
 
 ---
@@ -187,7 +187,6 @@ AWS_STORAGE_BUCKET_NAME=your-bucket-name
 - Login rate limiting has a bug (upload/share limits work)
 - Automated tests are in progress (4 security tests implemented)
 - CI/CD pipeline not yet set up
-- Docker setup is in progress
 
 ---
 
