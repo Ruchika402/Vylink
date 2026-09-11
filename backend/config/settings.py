@@ -120,15 +120,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ✅ PostgreSQL Database Configuration 
+# ✅ PostgreSQL Database Configuration (Secure)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vylink_db',
-        'USER': 'postgres',
-        'PASSWORD': '8697',  # ✅ Your password as string
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('DB_NAME', default='vylink_db'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD'),  # ✅ No default - fails if missing
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
@@ -174,7 +174,7 @@ REST_FRAMEWORK = {
         'images.authentication.JWTCookieAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',  # ✅ AllowAny for testing
+        'rest_framework.permissions.IsAuthenticated', 
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
