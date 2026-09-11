@@ -46,3 +46,7 @@ docker-compose.override.yml
 *.swp
 *.swo
 *~
+
+replacements.txt
+passwords.txt
+*.txt.tmp
