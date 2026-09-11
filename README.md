@@ -182,6 +182,15 @@ AWS_STORAGE_BUCKET_NAME=your-bucket-name
 
 ---
 
+## ⚠️ Known Limitations
+
+- Login rate limiting has a bug (upload/share limits work)
+- Automated tests are in progress (4 security tests implemented)
+- CI/CD pipeline not yet set up
+- Docker setup is in progress
+
+---
+
 ## 📄 License
 
 MIT © 2026 Ruchika Adak

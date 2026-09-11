@@ -25,7 +25,7 @@ class ImageSerializer(serializers.ModelSerializer):
                 # Generate pre-signed URL (60-second expiry)
                 return default_storage.url(obj.file.name)
             except Exception as e:
-                print(f"Error generating pre-signed URL: {e}")
+                #print(f"Error generating pre-signed URL: {e}")
                 return None
         return None
     

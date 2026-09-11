@@ -137,7 +137,7 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializer
 
     def create(self, request, *args, **kwargs):
-        print("🔍 Received data:", request.data)
+        #print("🔍 Received data:", request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -149,7 +149,7 @@ class RegisterView(generics.CreateAPIView):
                     "email": user.email
                 }
             }, status=status.HTTP_201_CREATED)
-        print("❌ Errors:", serializer.errors)
+        #print("❌ Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
