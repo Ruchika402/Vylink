@@ -233,19 +233,30 @@ const Files: React.FC = () => {
                   key={file.id}
                   className="bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-700 hover:border-gray-500 transition"
                 >
-                  <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden mb-2">
-                    {file.file_url ? (
-                      <img
-                        src={file.file_url}
-                        alt={file.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">
-                        📄
-                      </div>
-                    )}
-                  </div>
+                  <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden mb-2 flex items-center justify-center">
+  {file.file_url ? (
+    <img
+      src={file.file_url}
+      alt={file.title}
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        // ✅ Show placeholder when S3 image fails
+        e.currentTarget.style.display = "none";
+        e.currentTarget.parentElement!.innerHTML = `
+          <div class="text-gray-500 text-center p-4">
+            <div class="text-4xl mb-1">🖼️</div>
+            <p class="text-xs">Image unavailable</p>
+          </div>
+        `;
+      }}
+    />
+  ) : (
+    <div className="text-gray-500 text-center p-4">
+      <div className="text-4xl mb-1">📄</div>
+      <p className="text-xs">No preview</p>
+    </div>
+  )}
+</div>
                   <h4 className="font-medium text-white truncate">
                     {file.title}
                   </h4>
