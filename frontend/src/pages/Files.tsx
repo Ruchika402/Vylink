@@ -29,6 +29,7 @@ const Files: React.FC = () => {
   const [shareLink, setShareLink] = useState("");
   const [expiryDays, setExpiryDays] = useState(7);
   const [showUpload, setShowUpload] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     fetchFiles();
@@ -58,17 +59,20 @@ const Files: React.FC = () => {
   };
 
   const handleShare = async (file: File) => {
-    try {
-      const response = await api.post(`/images/${file.id}/share/`, {
-        expires_in: expiryDays,
-      });
-      setShareLink(response.data.full_url || response.data.shareable_link);
-      setSelectedFile(file);
-      setShowShareModal(true);
-    } catch (error) {
-      toast.error("Failed to generate share link");
-    }
-  };
+  setSharing(true);
+  try {
+    const response = await api.post(`/images/${file.id}/share/`, {
+      expires_in: expiryDays,
+    });
+    setShareLink(response.data.full_url || response.data.shareable_link);
+    setSelectedFile(file);
+    setShowShareModal(true);
+  } catch (error) {
+    toast.error("Failed to generate share link");
+  } finally {
+    setSharing(false);
+  }
+};
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareLink);
@@ -211,11 +215,12 @@ const Files: React.FC = () => {
                     </span>
                     {/* ✅ Text links for Share & Delete */}
                     <button
-                      onClick={() => handleShare(file)}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Share
-                    </button>
+  onClick={() => handleShare(file)}
+  disabled={sharing}
+  className="text-sm text-primary hover:underline disabled:opacity-50"
+>
+  {sharing ? "..." : "Share"}
+</button>
                     <button
                       onClick={() => handleDelete(file.id)}
                       className="text-sm text-red-400 hover:underline"
