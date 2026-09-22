@@ -100,7 +100,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # ✅ Logs to 
 # For production, use SMTP or SendGrid
 
 # ===== Frontend URL for redirects =====
-FRONTEND_URL = 'http://localhost:3000'
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
 SOCIALACCOUNT_LOGIN_REDIRECT_URL = FRONTEND_URL + '/dashboard'
 ACCOUNT_SIGNUP_REDIRECT_URL = FRONTEND_URL + '/dashboard'
 
@@ -137,11 +137,11 @@ DATABASES = {
     }
 }
 
-# ✅ Redis Cache
+# ✅ Redis Cache (env-driven)
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://localhost:6380/1',
+        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/1'),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
@@ -191,7 +191,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
@@ -209,7 +208,7 @@ SIMPLE_JWT = {
     # ✅ Correct cookie keys
     'JWT_ACCESS_COOKIE_NAME': 'access_token',
     'JWT_REFRESH_COOKIE_NAME': 'refresh_token',
-    'JWT_COOKIE_SECURE': False,
+    'JWT_COOKIE_SECURE': config('JWT_COOKIE_SECURE', default=False, cast=bool),
     'JWT_COOKIE_HTTPONLY': True,
     'JWT_COOKIE_SAMESITE': 'Lax',
 }
@@ -263,7 +262,10 @@ CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")  # Needed for Tailwind
 CSP_IMG_SRC = ("'self'", "data:", "https:")
 CSP_FONT_SRC = ("'self'", "data:")
-CSP_CONNECT_SRC = ("'self'", "http://localhost:8000", "http://localhost:3000")
+CSP_CONNECT_SRC = tuple(config(
+    'CSP_CONNECT_SRC',
+    default="'self',http://localhost:8000,http://localhost:3000"
+).split(','))
 CSP_FRAME_ANCESTORS = ("'none'",)
 CSP_FORM_ACTION = ("'self'",)
 CSP_BASE_URI = ("'self'",)
@@ -297,6 +299,33 @@ STORAGES = {
     },
 }
 
+
+# ============================================================
+# PRODUCTION SECURITY SETTINGS
+# ============================================================
+# These settings ONLY activate when DEBUG=False (production)
+# In development (DEBUG=True), they are skipped.
+
+if not DEBUG:
+    # ✅ Force HTTPS
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # ✅ Secure cookies (only sent over HTTPS)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    JWT_COOKIE_SECURE = True
+    
+    # ✅ HSTS — tells browsers to always use HTTPS
+    SECURE_HSTS_SECONDS = 31536000      # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # ✅ Additional security headers
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# ============================================================
 
 
 # ✅ These should NOT be in development (only production)
