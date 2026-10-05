@@ -103,33 +103,48 @@ class ImageViewSet(viewsets.ModelViewSet):
 # ========== PUBLIC SHARE VIEW ==========
 class PublicShareView(APIView):
     permission_classes = [permissions.AllowAny]
-    
+
     def get(self, request, link):
         from django.utils import timezone
-        
-        image = get_object_or_404(Image, shareable_link=link)
-        
+
+        # ✅ 1. Handle missing links properly (404, not 500)
+        try:
+            image = Image.objects.get(shareable_link=link)
+        except Image.DoesNotExist:
+            return Response(
+                {"error": "This share link does not exist"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # ✅ 2. Check expiry
         if image.expires_at and timezone.now() > image.expires_at:
             return Response(
                 {"error": "This link has expired"},
                 status=status.HTTP_410_GONE
             )
-        
+
+        # ✅ 3. Increment view count
         image.increment_view_count()
+
+        # ✅ 4. Generate pre-signed URL with error handling
         file_url = None
         if image.file:
             try:
                 file_url = default_storage.url(image.file.name)
+                print(f"✅ Pre-signed URL generated: {file_url[:80]}...")
             except Exception as e:
-                print(f"Error generating pre-signed URL: {e}")
-        
+                print(f"❌ Error generating pre-signed URL: {type(e).__name__}: {e}")
+                # Still return the image data, but without the URL
+                # This prevents a 500 error
+
+        # ✅ 5. Return response
         serializer = ImageSerializer(image, context={'request': request})
         data = serializer.data
-        data['file_url'] = file_url  # ✅ Add pre-signed URL to response
-        
+        data['file_url'] = file_url
+
         return Response(data)
 
-
+    
 # ========== AUTH VIEWS ==========
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
