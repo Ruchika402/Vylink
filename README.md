@@ -88,27 +88,6 @@ Vylink is a full-stack portfolio project demonstrating secure file sharing, auth
 
 ---
 
-## ✅ Completed Features
-
-| Feature | Description |
-|---|---|
-| **JWT Authentication** | Secure login using `httpOnly` cookies to prevent XSS-based token theft |
-| **Google OAuth** | Social login for quick, low-friction access |
-| **Image Upload** | Drag-and-drop upload with real-time preview |
-| **Shareable Links** | Unique links with configurable expiry (1 day, 7 days, never) |
-| **Dashboard** | File statistics: total files, views, active links |
-| **My Files** | Full file management: grid/list view, search, filter |
-| **Analytics** | View and engagement tracking per shared file |
-| **Security Headers** | CSP, X-Frame-Options, nosniff, HSTS |
-| **Input Sanitization** | Bleach-based sanitization to prevent XSS |
-| **S3 Pre-signed URLs** | Private bucket with temporary URLs (60-second expiry) |
-| **Rate Limiting** | 10 uploads/min, 20 shares/min to prevent abuse |
-| **Docker Containerization** | Dockerfiles and Docker Compose for the backend, PostgreSQL, Redis, and frontend |
-| **AWS EC2 Deployment** | Full stack deployed on EC2 behind an Nginx reverse proxy |
-| **HTTPS + Custom Domain** | Let's Encrypt certificate on a DuckDNS domain |
-
----
-
 ## 🏗️ Architecture
 
 ```
