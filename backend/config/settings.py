@@ -289,10 +289,17 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-# ✅ Use S3 as default storage
+# ✅ Use S3 as default storage WITH pre-signed URL options
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "querystring_auth": True,        # ✅ REQUIRED for pre-signed URLs
+            "querystring_expire": 3600,      # ✅ 1 hour expiry
+            "signature_version": "s3v4",     # ✅ SigV4
+            "default_acl": "private",        # ✅ Private bucket
+            "file_overwrite": False,         # ✅ Don't overwrite on re-upload
+        },
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
