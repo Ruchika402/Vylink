@@ -126,24 +126,13 @@ class PublicShareView(APIView):
         # ✅ 3. Increment view count
         image.increment_view_count()
         image.refresh_from_db() 
-        
+
         # ✅ 4. Generate pre-signed URL with error handling
-        file_url = None
-        if image.file:
-            try:
-                file_url = default_storage.url(image.file.name)
-                print(f"✅ Pre-signed URL generated: {file_url[:80]}...")
-            except Exception as e:
-                print(f"❌ Error generating pre-signed URL: {type(e).__name__}: {e}")
-                # Still return the image data, but without the URL
-                # This prevents a 500 error
-
-        # ✅ 5. Return response
+                # ✅ Just use the serializer — it generates signed URLs via boto3
         serializer = ImageSerializer(image, context={'request': request})
-        data = serializer.data
-        data['file_url'] = file_url
+        return Response(serializer.data)
 
-        return Response(data)
+        
 
     
 # ========== AUTH VIEWS ==========
