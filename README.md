@@ -158,7 +158,7 @@ Fill in your values in `backend/config/.env` before step 3. See [`.env.example`]
 
 Open **http://localhost:3000** and you're in.
 
-<details>
+
 <summary><strong>⚙️ Run without Docker</strong></summary>
 
 Requires Python 3.11+, Node.js 18+, PostgreSQL, and Redis. In your `.env`, set the database and Redis hosts to `localhost`.
@@ -178,7 +178,7 @@ pnpm install
 pnpm start
 ```
 
-</details>
+
 
 **First steps in the app:** register → log in → upload an image → create a share link with an expiry.
 
