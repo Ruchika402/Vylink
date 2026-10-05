@@ -125,7 +125,8 @@ class PublicShareView(APIView):
 
         # ✅ 3. Increment view count
         image.increment_view_count()
-
+        image.refresh_from_db() 
+        
         # ✅ 4. Generate pre-signed URL with error handling
         file_url = None
         if image.file:
