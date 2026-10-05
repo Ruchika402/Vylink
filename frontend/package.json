@@ -1,5 +1,8 @@
 {
   "name": "frontend",
+  "pnpm": {
+    "onlyBuiltDependencies": ["core-js", "core-js-pure"]
+  },
   "version": "0.1.0",
   "private": true,
   "dependencies": {
