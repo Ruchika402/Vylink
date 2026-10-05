@@ -3,6 +3,9 @@ from .models import Image
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage  
 import bleach
+import boto3
+from botocore.config import Config
+from django.conf import settings
 
 class ImageSerializer(serializers.ModelSerializer):
     owner_username = serializers.ReadOnlyField(source='owner.username')
@@ -19,15 +22,30 @@ class ImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['owner', 'view_count', 'shareable_link', 'uploaded_at', 'updated_at']
     
     def get_file_url(self, obj):
-        """Return pre-signed S3 URL for secure access"""
-        if obj.file:
-            try:
-                # Generate pre-signed URL (60-second expiry)
-                return default_storage.url(obj.file.name)
-            except Exception as e:
-                #print(f"Error generating pre-signed URL: {e}")
-                return None
-        return None
+        """Generate pre-signed S3 URL using boto3 directly"""
+        if not obj.file or not obj.file.name:
+            return None
+        try:
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_S3_REGION_NAME,
+                config=Config(signature_version='s3v4'),
+            )
+            url = s3_client.generate_presigned_url(
+                'get_object',
+                Params={
+                    'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+                    'Key': obj.file.name,
+                },
+                ExpiresIn=3600,  # 1 hour
+            )
+            print(f"✅ Signed URL for image {obj.id}")
+            return url
+        except Exception as e:
+            print(f"❌ Signing error: {type(e).__name__}: {e}")
+            return None
     
     def validate_title(self, value):
         """Sanitize title to prevent XSS"""
