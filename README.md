@@ -109,19 +109,6 @@ Vylink is a full-stack portfolio project demonstrating secure file sharing, auth
 
 ---
 
-## 🚧 Under Construction
-
-| Feature | Description | Why It Matters |
-|---|---|---|
-| **Docker Containerization** | Dockerfiles + `docker-compose.yml` for Django, PostgreSQL, Redis, and React | Consistent local dev, simpler deployment |
-| **AWS EC2 Deployment** | Deploy the full containerized stack to EC2 | Makes the app publicly accessible; demonstrates cloud skills |
-| **HTTPS + SSL** | Let's Encrypt certificate, Nginx as reverse proxy | Encrypts traffic — mandatory for production |
-| **Login Rate Limiting** | Fix the 5-attempts/min login limit (upload/share limits already work) | Completes brute-force protection |
-| **Logging & Monitoring** | Structured logging and error tracking | Visibility into app health and user activity |
-| **CI/CD Pipeline** | Automated testing and deployment via GitHub Actions | Code quality and faster releases |
-
----
-
 ## 🏗️ Architecture
 
 ```
