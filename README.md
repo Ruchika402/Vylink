@@ -2,15 +2,15 @@
 
 ![Header](https://capsule-render.vercel.app/api?type=waving&color=0:0F2027,50:203A43,100:2C5364&height=220&section=header&text=Vylink&fontSize=65&fontColor=00FF9C&fontAlignY=35&animation=twinkling&desc=Secure%20Image-Sharing%20Platform&descAlignY=58&descAlign=50&descSize=18&fontColor2=ffffff)
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1000&color=00FF9C&center=true&vCenter=true&width=600&lines=OWASP+Top+10+Compliant;JWT+%2B+Google+OAuth+Authentication;Pre-signed+S3+URLs+%7C+Rate+Limited+%7C+Encrypted)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=1000&color=00FF9C&center=true&vCenter=true&width=600&lines=Built+following+OWASP+Top+10+guidelines;JWT+%2B+Google+OAuth+Authentication;Pre-signed+S3+URLs+%7C+Rate+Limited+%7C+Encrypted)](https://git.io/typing-svg)
 
 ![License](https://img.shields.io/badge/license-MIT-00FF9C?style=flat-square)
 ![Status](https://img.shields.io/badge/status-in%20development-203A43?style=flat-square&labelColor=0F2027)
-![OWASP](https://img.shields.io/badge/OWASP-Top%2010-2C5364?style=flat-square&labelColor=0F2027)
+
 
 </div>
 
-Vylink is a full-stack portfolio project demonstrating secure file sharing, authentication, and cloud storage integration — built to **OWASP Top 10** standards, with **pre-signed S3 URLs** for safe, time-limited file delivery.
+Vylink is a full-stack portfolio project demonstrating secure file sharing, authentication, and cloud storage integration — built following **OWASP Top 10 guidelines**, with **pre-signed S3 URLs** for safe, time-limited file delivery.
 
 ---
 
@@ -46,7 +46,7 @@ Vylink is a full-stack portfolio project demonstrating secure file sharing, auth
 
 > The features that matter most for a project built around secure file delivery.
 
-- 🔐 **JWT auth via `httpOnly` cookies** — no tokens exposed to - 🔐 **JWT auth via `httpOnly` cookies**: no tokens exposed to client-side JS
+- 🔐 **JWT auth via `httpOnly` cookies**: no tokens exposed to client-side JS
 - 🔑 **Google OAuth**: reduces password-based attack surface
 - 🔒 **HTTPS everywhere**: Let's Encrypt certificate served through Nginx, with HSTS
 - 🧹 **Bleach input sanitization**: blocks stored/reflected XSS
@@ -54,6 +54,7 @@ Vylink is a full-stack portfolio project demonstrating secure file sharing, auth
 - ⏱️ **60-second expiring pre-signed S3 URLs**: private bucket, no public file exposure
 - ⚡ **Rate limiting** on uploads and shares: throttles abuse and scraping
 - 🚫 **Access control**: users can only see and manage their own files
+  
 ---
 
 ## 🛠️ Tech Stack
@@ -159,7 +160,6 @@ pnpm start
 
 
 
-**First steps in the app:** register → log in → upload an image → create a share link with an expiry.
 
 ---
 
@@ -193,7 +193,9 @@ pnpm start
 
 ## ⚠️ Known Limitations
 
+- S3 pre-signed URLs sometimes fail signature validation (being fixed)
 - Login rate limiting has a bug (upload/share limits work)
+- Share link page shows image metadata correctly; image rendering in progress
 - Automated tests are in progress (4 security tests implemented)
 - CI/CD pipeline not yet set up
 
