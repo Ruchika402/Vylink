@@ -20,6 +20,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
+from decouple import config
 
 # ========== RATE LIMIT EXCEEDED HANDLER ==========
 def rate_limit_exceeded(request, exception):
@@ -86,9 +87,13 @@ class ImageViewSet(viewsets.ModelViewSet):
             image.expires_at = None
             image.save(update_fields=['expires_at'])
         
+        # ✅ Return the frontend share URL, not the API URL
+        FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+
         return Response({
             "shareable_link": link,
-            "full_url": request.build_absolute_uri(f'/api/images/share/{link}/'),
+            "full_url": f"{FRONTEND_URL}/s/{link}",        # ✅ Frontend page
+            "api_url": request.build_absolute_uri(f'/api/images/share/{link}/'),
             "expires_at": image.expires_at,
             "expires_in": expires_in if expires_in > 0 else "Never"
         })

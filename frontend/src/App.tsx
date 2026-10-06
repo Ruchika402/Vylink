@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import ShareView from './pages/ShareView';
 
 // Pages
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -29,7 +30,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
+          <Route path="/s/:link" element={<ShareView />} />
+          
           {/* Protected Routes */}
           <Route
             path="/dashboard"
